@@ -1,5 +1,16 @@
 # Compiled class file
 *.class
+out/
+
+# IntelliJ
+.idea/
+
+# Generated test models
+src-gen/
+
+# Gradle
+.gradle/
+build/
 
 # Log file
 *.log
