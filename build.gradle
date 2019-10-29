@@ -1,15 +1,21 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'maven-publish'
+    id 'signing'
+    id 'nebula.release' version '13.0.0'
 }
 
 group 'org.contextmapper'
-version '1.0.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+if (!project.hasProperty('signing.secretKeyRingFile')) {
+    project.ext.'signing.secretKeyRingFile' = "${rootDir}/secret-key.gpg"
 }
 
 dependencies {
@@ -25,6 +31,119 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+    required { gradle.taskGraph.hasTask("publishMavenJavaPublicationToMavenLocal") || gradle.taskGraph.hasTask("publishMavenJavaPublicationToMavenRepository") }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            customizePom(pom)
+
+            artifactId = "${project.name}"
+            groupId = "${project.group}"
+            version = "${project.version}"
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            signArchives.signatures.each { signature ->
+                artifact(signature) {
+                    def matcher = signature.file =~ /-(sources|javadoc)\.jar\.asc$/
+                    if (matcher.find()) {
+                        classifier = matcher.group(1)
+                    } else {
+                        classifier = null
+                    }
+                    extension = signature.type
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "${ossReleaseStagingRepository}"
+            def snapshotsRepoUrl = "${ossSnapshotRepository}"
+            url = project.version.toString().endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username = System.getenv('OSSRH_USERNAME')
+                password = System.getenv('OSSRH_PASSWORD')
+            }
+        }
+    }
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // eliminate test-scoped dependencies
+        root.dependencies.removeAll { dep ->
+            dep.scope == "test"
+        }
+
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            description 'A reverse engineering library to generate Context Mapper DSL (CML) models from existing source code.'
+            name 'Context Mapper DSL (CML) Discovery Library'
+            url 'https://github.com/ContextMapper/context-map-discovery'
+            organization {
+                name 'Context Mapper'
+                url 'https://contextmapper.org/'
+            }
+            issueManagement {
+                system 'GitHub'
+                url 'https://github.com/ContextMapper/context-map-discovery/issues'
+            }
+            licenses {
+                license {
+                    name 'Apache License 2.0'
+                    url 'https://github.com/ContextMapper/service-cutter-library/blob/master/LICENSE'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                url 'https://github.com/ContextMapper/context-map-discovery'
+                connection 'scm:git:git://github.com/ContextMapper/context-map-discovery.git'
+                developerConnection 'scm:git:ssh://git@github.com:ContextMapper/context-map-discovery.git'
+            }
+            developers {
+                developer {
+                    name 'Stefan Kapferer'
+                    email 'stefan@contextmapper.org'
+                }
+            }
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
@@ -37,3 +156,15 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestReport
+
+model {
+    tasks.generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenJavaPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+}
