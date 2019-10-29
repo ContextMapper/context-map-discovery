@@ -1,0 +1,32 @@
+ContextMap {
+	contains PolicyManagement
+	contains CustomerManagement
+	contains CustomerSelfService
+	contains CustomerCore
+
+	CustomerCore -> PolicyManagement
+
+	CustomerCore -> CustomerManagement
+
+	PolicyManagement -> CustomerSelfService
+
+	CustomerCore -> CustomerSelfService
+
+}
+
+BoundedContext PolicyManagement {
+	implementationTechnology "Spring Boot"
+}
+
+BoundedContext CustomerManagement {
+	implementationTechnology "Spring Boot"
+}
+
+BoundedContext CustomerSelfService {
+	implementationTechnology "Spring Boot"
+}
+
+BoundedContext CustomerCore {
+	implementationTechnology "Spring Boot"
+}
+
