@@ -19,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.contextmapper.discovery.cml.ContextMapToCMLConverter;
 import org.contextmapper.discovery.model.ContextMap;
 import org.contextmapper.dsl.ContextMappingDSLStandaloneSetup;
-import org.contextmapper.dsl.contextMappingDSL.ContextMappingDSLFactory;
 import org.contextmapper.dsl.contextMappingDSL.ContextMappingModel;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -39,6 +38,8 @@ public class ContextMapSerializer {
     public void serializeContextMap(ContextMap contextMap, File cmlFile) throws IOException {
         if (!FilenameUtils.getExtension(cmlFile.toString()).equals("cml"))
             throw new IllegalArgumentException("The CML file must end with the file extension '*.cml'!");
+        if (contextMap.getBoundedContexts().size() <= 0)
+            throw new IllegalArgumentException("The Context Map must at least contain one Bounded Context to be serialized!");
 
         ContextMappingDSLStandaloneSetup.doSetup();
         Resource resource = new ResourceSetImpl().createResource(URI.createURI(cmlFile.toURI().toString()));

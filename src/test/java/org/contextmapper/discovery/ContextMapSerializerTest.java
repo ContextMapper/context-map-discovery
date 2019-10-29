@@ -19,6 +19,7 @@ import org.contextmapper.discovery.model.ContextMap;
 import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.names.SeparatorToCamelCaseBoundedContextNameMappingStrategy;
 import org.contextmapper.discovery.strategies.relationships.DockerComposeRelationshipDiscoveryStrategy;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,6 +67,30 @@ public class ContextMapSerializerTest {
 
         // then
         assertTrue(new File(TEST_CML_FILE).exists());
+    }
+
+    @Test
+    public void cannotSerializeOtherThanCMLFile() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.microservice.spring.boot"));
+
+        // when, then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new ContextMapSerializer().serializeContextMap(discoverer.discoverContextMap(), new File("test.ext"));
+        });
+    }
+
+    @Test
+    public void cannotSerializeEmptyContextMap() {
+        // given
+        ContextMap contextMap = new ContextMap();
+
+        // when, then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new ContextMapSerializer().serializeContextMap(contextMap, new File("test.cml"));
+        });
     }
 
 }

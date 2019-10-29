@@ -36,7 +36,9 @@ public class ContextMapToCMLConverter {
         model.setMap(contextMap);
 
         for (org.contextmapper.discovery.model.BoundedContext boundedContext : inputMap.getBoundedContexts()) {
-            model.getBoundedContexts().add(convert(boundedContext));
+            BoundedContext bc = convert(boundedContext);
+            model.getBoundedContexts().add(bc);
+            contextMap.getBoundedContexts().add(bc);
         }
 
         for (Relationship relationship : inputMap.getRelationships()) {

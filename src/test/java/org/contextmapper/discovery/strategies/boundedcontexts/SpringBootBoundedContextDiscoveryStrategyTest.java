@@ -17,7 +17,6 @@ package org.contextmapper.discovery.strategies.boundedcontexts;
 
 import org.contextmapper.discovery.ContextMapDiscoverer;
 import org.contextmapper.discovery.model.BoundedContext;
-import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
