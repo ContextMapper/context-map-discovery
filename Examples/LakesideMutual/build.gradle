@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'org.contextmapper'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.contextmapper:context-map-discovery:0.1.0'
+
+    // lakeside mutual dependencies (local Maven repo)
+    implementation 'com.lakesidemutual:customer-core:0.0.1-SNAPSHOT'
+    implementation 'com.lakesidemutual:customer-management-backend:0.0.1-SNAPSHOT'
+    implementation 'com.lakesidemutual:customer-self-service-backend:0.0.1-SNAPSHOT'
+    implementation 'com.lakesidemutual:policy-management-backend:0.0.1-SNAPSHOT'
+    implementation 'com.lakesidemutual:spring-boot-admin:0.0.1-SNAPSHOT'
+
+    implementation('org.jvnet.mimepull:mimepull:1.9.10') {
+        force = true
+    }
+}
