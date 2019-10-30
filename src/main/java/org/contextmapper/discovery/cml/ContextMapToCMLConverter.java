@@ -17,6 +17,8 @@ package org.contextmapper.discovery.cml;
 
 import org.contextmapper.discovery.model.Relationship;
 import org.contextmapper.dsl.contextMappingDSL.*;
+import org.contextmapper.tactic.dsl.tacticdsl.Entity;
+import org.contextmapper.tactic.dsl.tacticdsl.TacticdslFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,8 +59,26 @@ public class ContextMapToCMLConverter {
         BoundedContext bc = ContextMappingDSLFactory.eINSTANCE.createBoundedContext();
         bc.setName(inputContext.getName());
         bc.setImplementationTechnology(inputContext.getTechnology());
+        for (org.contextmapper.discovery.model.Aggregate aggregate : inputContext.getAggregates()) {
+            bc.getAggregates().add(convert(aggregate));
+        }
         this.boundedContextMap.put(inputContext.getName(), bc);
         return bc;
+    }
+
+    private Aggregate convert(org.contextmapper.discovery.model.Aggregate inputAggregate) {
+        Aggregate aggregate = ContextMappingDSLFactory.eINSTANCE.createAggregate();
+        aggregate.setName(inputAggregate.getName());
+        for (org.contextmapper.discovery.model.Entity entity : inputAggregate.getEntities()) {
+            aggregate.getDomainObjects().add(convert(entity));
+        }
+        return aggregate;
+    }
+
+    private Entity convert(org.contextmapper.discovery.model.Entity inputEntity) {
+        Entity entity = TacticdslFactory.eINSTANCE.createEntity();
+        entity.setName(inputEntity.getName());
+        return entity;
     }
 
     private UpstreamDownstreamRelationship convert(Relationship relationship) {

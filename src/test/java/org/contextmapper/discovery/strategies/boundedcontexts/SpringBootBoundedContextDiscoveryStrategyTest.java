@@ -16,12 +16,15 @@
 package org.contextmapper.discovery.strategies.boundedcontexts;
 
 import org.contextmapper.discovery.ContextMapDiscoverer;
+import org.contextmapper.discovery.model.Aggregate;
 import org.contextmapper.discovery.model.BoundedContext;
+import org.contextmapper.discovery.model.Entity;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SpringBootBoundedContextDiscoveryStrategyTest {
 
@@ -41,6 +44,67 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         BoundedContext bc = boundedContexts.iterator().next();
         assertEquals("TestSpringBoot", bc.getName());
         assertEquals("Spring Boot", bc.getTechnology());
+    }
+
+    @Test
+    public void canDiscoverResourcesAsAggregates() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        assertEquals(1, boundedContexts.size());
+        BoundedContext bc = boundedContexts.iterator().next();
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        assertEquals("customers", aggregate.getName());
+    }
+
+    @Test
+    public void canDiscoverEntitiesFromResourceMethods() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        assertEquals(1, boundedContexts.size());
+        BoundedContext bc = boundedContexts.iterator().next();
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        assertEquals("customers", aggregate.getName());
+        assertEquals(2, aggregate.getEntities().size());
+        assertTrue(aggregate.getEntities().contains(new Entity("test.application.spring.boot.model.Address", "Address")));
+        assertTrue(aggregate.getEntities().contains(new Entity("test.application.spring.boot.model.CustomerId", "CustomerId")));
+    }
+
+    @Test
+    public void canHandleMultipleAggregatesWithSameName() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.duplicate.aggregate.name")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        assertEquals(1, boundedContexts.size());
+        BoundedContext bc = boundedContexts.iterator().next();
+        assertEquals(3, bc.getAggregates().size());
+        assertTrue(bc.getAggregates().contains(new Aggregate("test")));
+        assertTrue(bc.getAggregates().contains(new Aggregate("TestSpringBoot_test")));
+        assertTrue(bc.getAggregates().contains(new Aggregate("TestSpringBoot_test_1")));
     }
 
 }
