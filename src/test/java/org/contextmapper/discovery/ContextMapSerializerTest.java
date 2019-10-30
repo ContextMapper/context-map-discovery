@@ -67,7 +67,7 @@ public class ContextMapSerializerTest {
         serializer.serializeContextMap(contextmap, new File(TEST_CML_FILE));
 
         // then
-        assertFalse(new File(TEST_CML_FILE).exists());
+        assertTrue(new File(TEST_CML_FILE).exists());
     }
 
     @Test

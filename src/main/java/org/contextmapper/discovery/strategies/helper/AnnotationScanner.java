@@ -57,20 +57,4 @@ public class AnnotationScanner {
         return reflections.getMethodsAnnotatedWith(annotation);
     }
 
-    /**
-     * Finds all return and parameter types of methods within a type which is annotated with a given annotation.
-     *
-     * @param type       the type within which you want to search for method return and parameter types
-     * @param annotation the annotation with which the methods must be annotated
-     * @return the set of return and parameter types of the methods within the given type which are annotated with the given annotation
-     */
-    public Set<Class<?>> getInputAndOutputTypesOfAnnotatedMethod(Class<?> type, Class<? extends Annotation> annotation) {
-        Set<Class<?>> inputOutputTypes = new HashSet<>();
-        for (Method method : scanForAnnotatedMethods(type, annotation)) {
-            inputOutputTypes.add(method.getGenericReturnType().getClass());
-            inputOutputTypes.addAll(Arrays.asList(method.getParameterTypes()));
-        }
-        return inputOutputTypes;
-    }
-
 }
