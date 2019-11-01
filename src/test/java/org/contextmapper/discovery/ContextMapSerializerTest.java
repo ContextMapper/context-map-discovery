@@ -19,6 +19,7 @@ import org.contextmapper.discovery.model.ContextMap;
 import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.names.SeparatorToCamelCaseBoundedContextNameMappingStrategy;
 import org.contextmapper.discovery.strategies.relationships.DockerComposeRelationshipDiscoveryStrategy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

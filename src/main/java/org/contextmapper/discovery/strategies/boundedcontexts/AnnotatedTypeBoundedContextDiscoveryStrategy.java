@@ -16,6 +16,7 @@
 package org.contextmapper.discovery.strategies.boundedcontexts;
 
 import org.contextmapper.discovery.model.BoundedContext;
+import org.contextmapper.discovery.strategies.helper.AnnotationScanner;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -44,15 +45,10 @@ public class AnnotatedTypeBoundedContextDiscoveryStrategy extends AbstractBounde
     @Override
     public Set<BoundedContext> discoverBoundedContexts() {
         Set<BoundedContext> set = new HashSet<>();
-        for (Class<?> type : scanForAnnotatedType(annotation)) {
+        for (Class<?> type : new AnnotationScanner().scanForAnnotatedType(packageName, annotation)) {
             set.add(createBoundedContext(type.getSimpleName(), technology));
         }
         return set;
-    }
-
-    private Set<Class<?>> scanForAnnotatedType(Class<? extends Annotation> annotation) {
-        Reflections reflections = new Reflections(packageName, new SubTypesScanner(), new TypeAnnotationsScanner());
-        return reflections.getTypesAnnotatedWith(annotation);
     }
 
 }

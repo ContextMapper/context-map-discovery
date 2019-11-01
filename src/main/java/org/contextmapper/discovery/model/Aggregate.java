@@ -22,83 +22,73 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a discovered Bounded Context.
+ * Represents a discovered Aggregate.
  *
  * @author Stefan Kapferer
  */
-public class BoundedContext {
+public class Aggregate {
 
     private String name;
-    private String technology;
-    private Set<Aggregate> aggregates;
+    private Set<Entity> entities;
 
-    public BoundedContext(String name) {
+    public Aggregate(String name) {
         setName(name);
-        this.aggregates = new HashSet<>();
+        this.entities = new HashSet<>();
     }
 
     /**
-     * Sets the name of this Bounded Context.
+     * Sets the name of this Aggregate.
      *
-     * @param name the name of the Bounded Context.
+     * @param name the name of the Aggregate.
      */
     public void setName(String name) {
         if (name == null || "".equals(name))
-            throw new IllegalArgumentException("The name of a Bounded Context must not be null or empty.");
+            throw new IllegalArgumentException("The name of an Aggregate must not be null or empty.");
         this.name = name;
     }
 
     /**
-     * Gets the name of this Bounded Context.
+     * Gets the name of this Aggregate.
      *
-     * @return the name of the Bounded Context as String
+     * @return the name of the Aggregate as String
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Sets the implementation technology of this Bounded Context.
+     * Adds an entity to the Aggregate.
      *
-     * @param technology the implementation technology of this Bounded Context as a String
+     * @param entity the entity to be added to the Aggregate
      */
-    public void setTechnology(String technology) {
-        this.technology = technology;
+    public void addEntity(Entity entity) {
+        this.entities.add(entity);
     }
 
     /**
-     * Gets the implementation technology of this Bounded Context.
+     * Adds all entities in the given set to the Aggregate.
      *
-     * @return the implementation technology of this Bounded Context as a String
+     * @param entities the set of entities to be added to the Aggregate
      */
-    public String getTechnology() {
-        return technology;
+    public void addEntities(Set<Entity> entities) {
+        this.entities.addAll(entities);
     }
 
     /**
-     * Adds Aggregates to the Bounded Context.
+     * Gets the set of entities within the Aggregate.
      *
-     * @param aggregates the set of Aggregates to be added
+     * @return the set of entities which are part of the Aggregate
      */
-    public void addAggregates(Set<Aggregate> aggregates) {
-        this.aggregates.addAll(aggregates);
-    }
-
-    /**
-     * Gets the Aggregates of the Bounded Context.
-     *
-     * @return the set of Aggregates of the Bounded Context
-     */
-    public Set<Aggregate> getAggregates() {
-        return new HashSet<>(aggregates);
+    public Set<Entity> getEntities() {
+        return new HashSet<>(entities);
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof BoundedContext))
+        if (!(object instanceof Aggregate))
             return false;
 
-        BoundedContext bc = (BoundedContext) object;
+        Aggregate bc = (Aggregate) object;
 
         return new EqualsBuilder()
                 .append(name, bc.name)
