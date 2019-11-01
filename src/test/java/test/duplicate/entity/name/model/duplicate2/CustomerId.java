@@ -13,24 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.application.spring.boot.model;
+package test.duplicate.entity.name.model.duplicate2;
 
-public class Address {
+public class CustomerId {
 
-    private String street;
-    private String city;
-    private int plz;
-    private String[] arrayTest;
+    private String id;
 
-    public int getPlz() {
-        return plz;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
 }

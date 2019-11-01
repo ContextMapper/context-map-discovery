@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.application.spring.boot.interfaces;
+package test.duplicate.entity.name.interfaces;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import test.application.spring.boot.model.Address;
-import test.application.spring.boot.model.Customer;
-import test.application.spring.boot.model.CustomerId;
+import test.duplicate.entity.name.model.Address;
+import test.duplicate.entity.name.model.Customer;
+import test.duplicate.entity.name.model.CustomerId;
 
 @RestController
 @RequestMapping({"/customers"})
 public class CustomerInformationHolder {
+
+    @PutMapping({"/{customerId}/address"})
+    public ResponseEntity<Address> changeAddress(@PathVariable test.duplicate.entity.name.model.duplicate1.CustomerId customerId, @RequestBody Address requestDto) {
+        // method will never be called; this is just for our reflection (scanning) tests;
+        return null;
+    }
 
     @PutMapping({"/{customerId}/address"})
     public ResponseEntity<Address> changeAddress(@PathVariable CustomerId customerId, @RequestBody Address requestDto) {
@@ -32,7 +38,7 @@ public class CustomerInformationHolder {
     }
 
     @GetMapping({"/{customerId}/"})
-    public ResponseEntity<Customer> getCustomer(@PathVariable CustomerId customerId) {
+    public ResponseEntity<Customer> getCustomer(@PathVariable test.duplicate.entity.name.model.duplicate2.CustomerId customerId) {
         // method will never be called; this is just for our reflection (scanning) tests;
         return null;
     }

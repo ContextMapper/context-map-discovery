@@ -17,8 +17,7 @@ package org.contextmapper.discovery.cml;
 
 import org.contextmapper.discovery.model.Relationship;
 import org.contextmapper.dsl.contextMappingDSL.*;
-import org.contextmapper.tactic.dsl.tacticdsl.Entity;
-import org.contextmapper.tactic.dsl.tacticdsl.TacticdslFactory;
+import org.contextmapper.tactic.dsl.tacticdsl.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +30,7 @@ import java.util.Map;
 public class ContextMapToCMLConverter {
 
     private Map<String, BoundedContext> boundedContextMap = new HashMap<>();
+    private Map<org.contextmapper.discovery.model.Entity, Entity> entityLookupMap = new HashMap<>();
 
     public ContextMappingModel convert(org.contextmapper.discovery.model.ContextMap inputMap) {
         ContextMappingModel model = ContextMappingDSLFactory.eINSTANCE.createContextMappingModel();
@@ -51,6 +51,8 @@ public class ContextMapToCMLConverter {
                 contextMap.getBoundedContexts().add(upstreamDownstreamRelationship.getDownstream());
             contextMap.getRelationships().add(convert(relationship));
         }
+
+        updateEntityAttributesAndReferences();
 
         return model;
     }
@@ -78,6 +80,7 @@ public class ContextMapToCMLConverter {
     private Entity convert(org.contextmapper.discovery.model.Entity inputEntity) {
         Entity entity = TacticdslFactory.eINSTANCE.createEntity();
         entity.setName(inputEntity.getName());
+        entityLookupMap.put(inputEntity, entity);
         return entity;
     }
 
@@ -88,4 +91,26 @@ public class ContextMapToCMLConverter {
         return upstreamDownstreamRelationship;
     }
 
+    private void updateEntityAttributesAndReferences() {
+        for (Map.Entry<org.contextmapper.discovery.model.Entity, Entity> entry : this.entityLookupMap.entrySet()) {
+            updateEntity(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void updateEntity(org.contextmapper.discovery.model.Entity inputEntity, Entity entity) {
+        for (org.contextmapper.discovery.model.Attribute inputAttribute : inputEntity.getAttributes()) {
+            Attribute attribute = TacticdslFactory.eINSTANCE.createAttribute();
+            attribute.setName(inputAttribute.getName());
+            attribute.setType(inputAttribute.getType());
+            attribute.setCollectionType(CollectionType.get(inputAttribute.getCollectionType()));
+            entity.getAttributes().add(attribute);
+        }
+        for (org.contextmapper.discovery.model.Reference inputReference : inputEntity.getReferences()) {
+            Reference reference = TacticdslFactory.eINSTANCE.createReference();
+            reference.setName(inputReference.getName());
+            reference.setDomainObjectType(this.entityLookupMap.get(inputReference.getType()));
+            reference.setCollectionType(CollectionType.get(inputReference.getCollectionType()));
+            entity.getReferences().add(reference);
+        }
+    }
 }

@@ -15,22 +15,30 @@
  */
 package test.application.spring.boot.model;
 
-public class Address {
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-    private String street;
-    private String city;
-    private int plz;
-    private String[] arrayTest;
+public class Customer {
 
-    public int getPlz() {
-        return plz;
+    private CustomerId id;
+    private List<Address> addressList;
+    private Set<Address> addressSet;
+    private Collection<Address> addressCollection;
+
+    public CustomerId getId() {
+        return id;
     }
 
-    public String getCity() {
-        return city;
+    public List<Address> getAddressList() {
+        return addressList;
     }
 
-    public String getStreet() {
-        return street;
+    public Collection<Address> getAddressCollection() {
+        return addressCollection;
+    }
+
+    public Set<Address> getAddressSet() {
+        return addressSet;
     }
 }

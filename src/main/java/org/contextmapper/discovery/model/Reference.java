@@ -28,6 +28,7 @@ public class Reference {
     private Entity parent;
     private String name;
     private Entity type;
+    private String collectionType;
 
     public Reference(Entity type, String name) {
         this.type = type;
@@ -68,6 +69,33 @@ public class Reference {
      */
     public void setParent(Entity parent) {
         this.parent = parent;
+    }
+
+    /**
+     * Sets the collection type of the reference attribute.
+     *
+     * @param collectionType the collection type of the reference attribute
+     */
+    public void setCollectionType(String collectionType) {
+        this.collectionType = collectionType;
+    }
+
+    /**
+     * Gets the collection type of the reference attribute.
+     *
+     * @return the collection type of the reference attribute
+     */
+    public String getCollectionType() {
+        return collectionType;
+    }
+
+    /**
+     * Returns whether the reference attribute is a collection of references or not.
+     *
+     * @return true, if the reference attribute is a collection of references. false otherwise.
+     */
+    public boolean isCollection() {
+        return collectionType == null || "".equals(collectionType);
     }
 
     @Override

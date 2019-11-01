@@ -15,10 +15,12 @@
  */
 package org.contextmapper.discovery.strategies.helper;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Some helper methods for scanning entities etc.
@@ -41,6 +43,38 @@ public class ReflectionHelpers {
             actualTypes.add((Class<?>) actualType);
         }
         return actualTypes;
+    }
+
+    /**
+     * Gets all fields of a type.
+     *
+     * @param type the type for which the fields shall be returned
+     * @return the list of fields of the given type
+     */
+    public List<Field> getAllFieldsOfType(Class<?> type) {
+        if (type == null) {
+            return Collections.emptyList();
+        }
+
+        List<Field> result = new ArrayList<>(getAllFieldsOfType(type.getSuperclass()));
+        result.addAll(Arrays.asList(type.getDeclaredFields()).stream().filter(f -> !f.getName().startsWith("$")).collect(Collectors.toSet()));
+        return result;
+    }
+
+    /**
+     * Checks whether a type is a collection, set, or list.
+     *
+     * @param type the type to be checked for collection types
+     * @return true, if the given type is a set, list, or collection. false otherwise.
+     */
+    public boolean isCollectionType(Class<?> type) {
+        if (type.equals(List.class))
+            return true;
+        else if (type.equals(Set.class))
+            return true;
+        else if (type.equals(Collection.class))
+            return true;
+        return false;
     }
 
 }

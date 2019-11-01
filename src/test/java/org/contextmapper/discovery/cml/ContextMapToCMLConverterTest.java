@@ -94,9 +94,57 @@ public class ContextMapToCMLConverterTest {
         assertEquals(1, bc.getAggregates().size());
         Aggregate aggregate = bc.getAggregates().get(0);
         assertEquals("customers", aggregate.getName());
-        assertEquals(2, aggregate.getDomainObjects().size());
+        assertEquals(3, aggregate.getDomainObjects().size());
         assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("Address")).findFirst().get());
         assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("CustomerId")).findFirst().get());
+        assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("Customer")).findFirst().get());
+    }
+
+    @Test
+    public void canConvertAttributes() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+        org.contextmapper.discovery.model.ContextMap contextMap = discoverer.discoverContextMap();
+
+        // when
+        ContextMappingModel model = new ContextMapToCMLConverter().convert(contextMap);
+
+        // then
+        assertEquals(1, model.getBoundedContexts().size());
+        BoundedContext bc = model.getBoundedContexts().iterator().next();
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate aggregate = bc.getAggregates().get(0);
+        Entity addressEntity = (Entity) aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Address")).findFirst().get();
+        assertNotNull(addressEntity);
+        assertEquals(4, addressEntity.getAttributes().size());
+        assertNotNull(addressEntity.getAttributes().stream().filter(a -> a.getName().equals("street")).findFirst().get());
+    }
+
+    @Test
+    public void canConvertReferences() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+        org.contextmapper.discovery.model.ContextMap contextMap = discoverer.discoverContextMap();
+
+        // when
+        ContextMappingModel model = new ContextMapToCMLConverter().convert(contextMap);
+
+        // then
+        assertEquals(1, model.getBoundedContexts().size());
+        BoundedContext bc = model.getBoundedContexts().iterator().next();
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate aggregate = bc.getAggregates().get(0);
+        Entity customerEntity = (Entity) aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
+        assertNotNull(customerEntity);
+        assertEquals(4, customerEntity.getReferences().size());
+        assertEquals("CustomerId", customerEntity.getReferences().stream().filter(r -> r.getName().equals("id")).findFirst().get()
+                .getDomainObjectType().getName());
     }
 
 }

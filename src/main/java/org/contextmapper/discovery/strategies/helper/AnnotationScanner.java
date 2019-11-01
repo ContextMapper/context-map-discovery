@@ -48,13 +48,17 @@ public class AnnotationScanner {
     /**
      * Finds all methods of a type which are annotated with a given annotation.
      *
-     * @param type       the type within which you want to search for methods
-     * @param annotation the annotation with which the methods must be annotated
+     * @param type        the type within which you want to search for methods
+     * @param annotations the annotations with which the methods must be annotated (at least one of the given annotations)
      * @return the set of methods within the given type which are annotated with the given annotation
      */
-    public Set<Method> scanForAnnotatedMethods(Class<?> type, Class<? extends Annotation> annotation) {
+    public Set<Method> scanForAnnotatedMethods(Class<?> type, Class<? extends Annotation>... annotations) {
         Reflections reflections = new Reflections(type.getName(), new MethodAnnotationsScanner());
-        return reflections.getMethodsAnnotatedWith(annotation);
+        Set<Method> methods = new HashSet<>();
+        for (Class<? extends Annotation> annotation : annotations) {
+            methods.addAll(reflections.getMethodsAnnotatedWith(annotation));
+        }
+        return methods;
     }
 
 }
