@@ -22,7 +22,7 @@ import test.duplicate.entity.name.model.Customer;
 import test.duplicate.entity.name.model.CustomerId;
 
 @RestController
-@RequestMapping({"/customers"})
+@RequestMapping({"customers", "second-ignored-mapping"})
 public class CustomerInformationHolder {
 
     @PutMapping({"/{customerId}/address"})

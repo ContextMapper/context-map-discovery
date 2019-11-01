@@ -64,7 +64,7 @@ public class SpringBootBoundedContextDiscoveryStrategy extends AbstractBoundedCo
         Set<Aggregate> resultSet = new HashSet<>();
         for (Class<?> type : new AnnotationScanner().scanForAnnotatedType(packageName, RequestMapping.class)) {
             RequestMapping requestMapping = type.getAnnotation(RequestMapping.class);
-            if (requestMapping.value().length == 1) {
+            if (requestMapping.value().length > 0) {
                 Aggregate aggregate = createAggregate(bc, requestMapping.value()[0]);
                 aggregate.addEntities(discoverEntities(aggregate.getName(), type));
                 resultSet.add(aggregate);
