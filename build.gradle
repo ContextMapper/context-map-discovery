@@ -12,6 +12,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
 }
 
 if (!project.hasProperty('signing.secretKeyRingFile')) {
@@ -25,7 +28,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.yaml:snakeyaml:1.25'
-    implementation 'org.contextmapper:context-mapper-dsl:5.1.0'
+    implementation 'org.contextmapper:context-mapper-dsl:5.1.1-SNAPSHOT'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion

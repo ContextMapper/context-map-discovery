@@ -32,6 +32,7 @@ public class Entity {
     private String type;
     private Set<Attribute> attributes;
     private Set<Reference> references;
+    private String discoveryComment;
 
     public Entity(String type, String name) {
         if (name == null || "".equals(name))
@@ -99,6 +100,24 @@ public class Entity {
      */
     public Set<Reference> getReferences() {
         return new HashSet<>(references);
+    }
+
+    /**
+     * Sets a comment describing how the entity has been discovered.
+     *
+     * @param discoveryComment the comment describing how the entity has been discovered
+     */
+    public void setDiscoveryComment(String discoveryComment) {
+        this.discoveryComment = discoveryComment;
+    }
+
+    /**
+     * Gets a comment describing how the entity has been discovered.
+     *
+     * @return the comment describing how the entity has been discovered
+     */
+    public String getDiscoveryComment() {
+        return discoveryComment;
     }
 
     @Override

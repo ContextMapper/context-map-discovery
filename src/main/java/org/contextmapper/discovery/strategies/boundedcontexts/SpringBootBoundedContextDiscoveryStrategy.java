@@ -67,6 +67,7 @@ public class SpringBootBoundedContextDiscoveryStrategy extends AbstractBoundedCo
             if (requestMapping.value().length > 0) {
                 Aggregate aggregate = createAggregate(bc, requestMapping.value()[0]);
                 aggregate.addEntities(discoverEntities(aggregate.getName(), type));
+                aggregate.setDiscoveryComment("This Aggregate has been created on the basis of the Spring REST controller " + type.getName() + ".");
                 resultSet.add(aggregate);
             }
         }
@@ -129,6 +130,7 @@ public class SpringBootBoundedContextDiscoveryStrategy extends AbstractBoundedCo
         }
         this.discoveredEntityNames.add(entityName);
         Entity entity = new Entity(type.getName(), entityName);
+        entity.setDiscoveryComment("This entity has been derived from the class " + type.getName() + ".");
         this.entityMap.put(type, entity);
         return entity;
     }

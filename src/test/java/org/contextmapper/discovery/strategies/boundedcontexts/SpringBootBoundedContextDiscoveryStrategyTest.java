@@ -223,4 +223,38 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         assertTrue(entityNames.contains("customers_CustomerId_1"));
     }
 
+    @Test
+    public void canCreateDiscoveryCommentOnAggregate() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        BoundedContext bc = boundedContexts.iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        assertEquals("This Aggregate has been created on the basis of the Spring REST controller test.application.spring.boot.interfaces.CustomerInformationHolder.", aggregate.getDiscoveryComment());
+    }
+
+    @Test
+    public void canCreateDiscoveryCommentOnEntity() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        BoundedContext bc = boundedContexts.iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        Entity entity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Address")).findAny().get();
+        assertEquals("This entity has been derived from the class test.application.spring.boot.model.Address.", entity.getDiscoveryComment());
+    }
 }
