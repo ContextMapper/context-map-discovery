@@ -5,6 +5,12 @@ out/
 # IntelliJ
 .idea/
 
+# Eclipse
+.classpath
+.project
+.settings/
+bin
+
 # Generated test models
 src-gen/
 
