@@ -80,6 +80,9 @@ implementation 'org.contextmapper:context-map-discovery:1.0.0'
 </dependency>
 ```
 
+### Example Projects
+In the folder [Examples](./Examples) of this repository you find example microservice projects on which we applied this discovery library to reverse engineer CML Context Maps.
+
 ## Development / Build
 If you want to contribute to this project you can create a fork and a pull request. The project is built with Gradle, so you can import it as Gradle project within Eclipse or IntelliJ IDEA (or any other IDE supporting Gradle).
 
