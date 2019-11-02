@@ -30,6 +30,7 @@ public class Aggregate {
 
     private String name;
     private Set<Entity> entities;
+    private String discoveryComment;
 
     public Aggregate(String name) {
         setName(name);
@@ -81,6 +82,24 @@ public class Aggregate {
      */
     public Set<Entity> getEntities() {
         return new HashSet<>(entities);
+    }
+
+    /**
+     * Sets a comment regarding how the Aggregate has been discovered.
+     *
+     * @param discoveryComment the comment regarding how the Aggregate has been discovered
+     */
+    public void setDiscoveryComment(String discoveryComment) {
+        this.discoveryComment = discoveryComment;
+    }
+
+    /**
+     * Gets a comment regarding how the Aggregate has been discovered.
+     *
+     * @return a comment regarding how the Aggregate has been discovered.
+     */
+    public String getDiscoveryComment() {
+        return discoveryComment;
     }
 
     @Override

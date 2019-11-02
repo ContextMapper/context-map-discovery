@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.contextmapper:context-map-discovery:0.1.0'
+    implementation 'org.contextmapper:context-map-discovery:0.2.0-SNAPSHOT'
 
     // lakeside mutual dependencies (local Maven repo)
     implementation 'com.lakesidemutual:customer-core:0.0.1-SNAPSHOT'

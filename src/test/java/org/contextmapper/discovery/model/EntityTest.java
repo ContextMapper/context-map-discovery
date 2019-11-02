@@ -127,4 +127,17 @@ public class EntityTest {
         assertFalse(equals);
     }
 
+    @Test
+    public void canAddDiscoveryComment() {
+        // given
+        Entity entity = new Entity("test.Type", "Type");
+        String discoveryComment = "This entity has been derived from the class test.Type.";
+
+        // when
+        entity.setDiscoveryComment(discoveryComment);
+
+        // then
+        assertEquals(discoveryComment, entity.getDiscoveryComment());
+    }
+
 }

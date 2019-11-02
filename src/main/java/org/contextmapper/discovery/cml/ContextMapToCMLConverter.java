@@ -71,6 +71,7 @@ public class ContextMapToCMLConverter {
     private Aggregate convert(org.contextmapper.discovery.model.Aggregate inputAggregate) {
         Aggregate aggregate = ContextMappingDSLFactory.eINSTANCE.createAggregate();
         aggregate.setName(inputAggregate.getName());
+        aggregate.setComment("// " + inputAggregate.getDiscoveryComment());
         for (org.contextmapper.discovery.model.Entity entity : inputAggregate.getEntities()) {
             aggregate.getDomainObjects().add(convert(entity));
         }
@@ -80,6 +81,7 @@ public class ContextMapToCMLConverter {
     private Entity convert(org.contextmapper.discovery.model.Entity inputEntity) {
         Entity entity = TacticdslFactory.eINSTANCE.createEntity();
         entity.setName(inputEntity.getName());
+        entity.setComment("// " + inputEntity.getDiscoveryComment());
         entityLookupMap.put(inputEntity, entity);
         return entity;
     }

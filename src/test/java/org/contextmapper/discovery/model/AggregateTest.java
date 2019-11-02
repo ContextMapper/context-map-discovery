@@ -86,4 +86,16 @@ public class AggregateTest {
         assertFalse(equals);
     }
 
+    @Test
+    public void canAddComment() {
+        // given
+        Aggregate aggregate = new Aggregate("TestAggregate");
+        String comment = "This aggregate has been created on the basis of the REST controller test.TestAggregate";
+
+        // when
+        aggregate.setDiscoveryComment(comment);
+
+        // then
+        assertEquals(comment, aggregate.getDiscoveryComment());
+    }
 }

@@ -74,6 +74,7 @@ public class ContextMapToCMLConverterTest {
         assertEquals(1, bc.getAggregates().size());
         Aggregate aggregate = bc.getAggregates().get(0);
         assertEquals("customers", aggregate.getName());
+        assertEquals("// This Aggregate has been created on the basis of the Spring REST controller test.application.spring.boot.interfaces.CustomerInformationHolder.", aggregate.getComment());
     }
 
     @Test
@@ -95,9 +96,11 @@ public class ContextMapToCMLConverterTest {
         Aggregate aggregate = bc.getAggregates().get(0);
         assertEquals("customers", aggregate.getName());
         assertEquals(3, aggregate.getDomainObjects().size());
-        assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("Address")).findFirst().get());
+        Entity addressEntity = (Entity) aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("Address")).findFirst().get();
+        assertNotNull(addressEntity);
         assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("CustomerId")).findFirst().get());
         assertNotNull(aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("Customer")).findFirst().get());
+        assertEquals("// This entity has been derived from the class test.application.spring.boot.model.Address.", addressEntity.getComment());
     }
 
     @Test

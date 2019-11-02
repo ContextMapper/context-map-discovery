@@ -19,13 +19,13 @@ if (!project.hasProperty('signing.secretKeyRingFile')) {
 }
 
 dependencies {
-    implementation 'org.reflections:reflections:0.9.11'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.0.RELEASE'
-    implementation 'org.springframework:spring-web:5.2.0.RELEASE'
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'commons-io:commons-io:2.6'
-    implementation 'org.yaml:snakeyaml:1.25'
-    implementation 'org.contextmapper:context-mapper-dsl:5.1.0'
+    implementation "org.reflections:reflections:${reflectionsVersion}"
+    implementation "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
+    implementation "org.springframework:spring-web:${springWebVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+    implementation "commons-io:commons-io:${commonsIOVersion}"
+    implementation "org.yaml:snakeyaml:${snakeYMLVersion}"
+    implementation "org.contextmapper:context-mapper-dsl:${cmlVersion}"
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion
