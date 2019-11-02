@@ -10,18 +10,17 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     mavenLocal()
-    jcenter()
 }
 
 dependencies {
-    implementation 'org.contextmapper:context-map-discovery:0.2.0-SNAPSHOT'
+    implementation "org.contextmapper:context-map-discovery:${discoveryLibVersion}"
 
     // lakeside mutual dependencies (local Maven repo)
-    implementation 'com.lakesidemutual:customer-core:0.0.1-SNAPSHOT'
-    implementation 'com.lakesidemutual:customer-management-backend:0.0.1-SNAPSHOT'
-    implementation 'com.lakesidemutual:customer-self-service-backend:0.0.1-SNAPSHOT'
-    implementation 'com.lakesidemutual:policy-management-backend:0.0.1-SNAPSHOT'
-    implementation 'com.lakesidemutual:spring-boot-admin:0.0.1-SNAPSHOT'
+    implementation "com.lakesidemutual:customer-core:${lakesideMutualVersion}"
+    implementation "com.lakesidemutual:customer-management-backend:${lakesideMutualVersion}"
+    implementation "com.lakesidemutual:customer-self-service-backend:${lakesideMutualVersion}"
+    implementation "com.lakesidemutual:policy-management-backend:${lakesideMutualVersion}"
+    implementation "com.lakesidemutual:spring-boot-admin:${lakesideMutualVersion}"
 
     implementation('org.jvnet.mimepull:mimepull:1.9.10') {
         force = true
