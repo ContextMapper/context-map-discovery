@@ -56,6 +56,32 @@ public class DockerComposeRelationshipDiscoveryStrategyTest {
         assertEquals("Microservice2", relationship.getDownstream().getName());
     }
 
+    @Test
+    public void canAddAllDiscoveredAggregatesToExposedAggregates() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.microservice.spring.boot"))
+                .usingRelationshipDiscoveryStrategies(
+                        new DockerComposeRelationshipDiscoveryStrategy(new File("./src/test/resources/test/microservice/spring-boot")))
+                .usingBoundedContextNameMappingStrategies(
+                        new SeparatorToCamelCaseBoundedContextNameMappingStrategy("-")
+                );
+
+        // when
+        ContextMap contextmap = discoverer.discoverContextMap();
+
+        // then
+        assertEquals(1, contextmap.getRelationships().size());
+        Relationship relationship = contextmap.getRelationships().iterator().next();
+        assertEquals("Microservice1", relationship.getUpstream().getName());
+        assertEquals("Microservice2", relationship.getDownstream().getName());
+        assertEquals(1, relationship.getExposedAggregates().size());
+        assertEquals("customers", relationship.getExposedAggregates().iterator().next().getName());
+        assertEquals("The list of exposed Aggregates may contain Aggregates which are not used by the downstream " +
+                "(discovery strategy simply added all Aggregates).", relationship.getExposedAggregatesComment());
+    }
+
     @ParameterizedTest
     @MethodSource("noServicesDockerComposeFiles")
     public void emptyResultIfDockerComposeFileDoesNotContainServices(String sourcePath) {

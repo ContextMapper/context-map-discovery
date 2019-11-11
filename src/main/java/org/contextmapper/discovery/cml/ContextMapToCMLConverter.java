@@ -21,6 +21,7 @@ import org.contextmapper.tactic.dsl.tacticdsl.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Converts a {@link org.contextmapper.discovery.model.ContextMap} to the CML {@link org.contextmapper.dsl.contextMappingDSL.ContextMap}
@@ -90,6 +91,12 @@ public class ContextMapToCMLConverter {
         UpstreamDownstreamRelationship upstreamDownstreamRelationship = ContextMappingDSLFactory.eINSTANCE.createUpstreamDownstreamRelationship();
         upstreamDownstreamRelationship.setUpstream(this.boundedContextMap.get(relationship.getUpstream().getName()));
         upstreamDownstreamRelationship.setDownstream(this.boundedContextMap.get(relationship.getDownstream().getName()));
+        for (org.contextmapper.discovery.model.Aggregate aggregate : relationship.getExposedAggregates()) {
+            Optional<Aggregate> cmlAggregate = upstreamDownstreamRelationship.getUpstream().getAggregates().stream().filter(a -> a.getName().equals(aggregate.getName())).findFirst();
+            if (cmlAggregate.isPresent())
+                upstreamDownstreamRelationship.getUpstreamExposedAggregates().add(cmlAggregate.get());
+        }
+        upstreamDownstreamRelationship.setExposedAggregatesComment("// " + relationship.getExposedAggregatesComment());
         return upstreamDownstreamRelationship;
     }
 

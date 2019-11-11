@@ -25,8 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ContextMapToCMLConverterTest {
 
@@ -54,6 +53,9 @@ public class ContextMapToCMLConverterTest {
         UpstreamDownstreamRelationship relationship = (UpstreamDownstreamRelationship) contextMap.getRelationships().get(0);
         assertEquals("Microservice1", relationship.getUpstream().getName());
         assertEquals("Microservice2", relationship.getDownstream().getName());
+        assertEquals(1, relationship.getUpstreamExposedAggregates().size());
+        assertEquals("customers", relationship.getUpstreamExposedAggregates().iterator().next().getName());
+        assertTrue(relationship.getExposedAggregatesComment().startsWith("// "));
     }
 
     @Test

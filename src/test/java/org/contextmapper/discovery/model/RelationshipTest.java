@@ -15,6 +15,7 @@
  */
 package org.contextmapper.discovery.model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +59,49 @@ public class RelationshipTest {
 
         // then
         assertFalse(equals);
+    }
+
+    @Test
+    public void canAddExposedAggregates() {
+        // given
+        BoundedContext upstream = new BoundedContext("UpstreamContext");
+        Aggregate aggregate = new Aggregate("ExposedAggregate");
+        upstream.addAggregate(aggregate);
+        BoundedContext downstream = new BoundedContext("DownstreamContext");
+
+        // when
+        Relationship relationship = new Relationship(upstream, downstream);
+        relationship.addExposedAggregate(aggregate);
+
+        // then
+        assertEquals(1, relationship.getExposedAggregates().size());
+        assertEquals(aggregate, relationship.getExposedAggregates().iterator().next());
+    }
+
+    @Test
+    public void cannotAddExposedAggregateWhichIsNotPartOfUpstreamContext() {
+        // given
+        BoundedContext upstream = new BoundedContext("UpstreamContext");
+        Aggregate aggregate = new Aggregate("ExposedAggregate");
+        BoundedContext downstream = new BoundedContext("DownstreamContext");
+        Relationship relationship = new Relationship(upstream, downstream);
+
+        // when, then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            relationship.addExposedAggregate(aggregate);
+        });
+    }
+
+    @Test
+    public void canSetExposedAggregateDiscoveryComment() {
+        // given
+        Relationship relationship = new Relationship(new BoundedContext("UpstreamContext"), new BoundedContext("DownstreamContext"));
+
+        // when
+        relationship.setExposedAggregatesComment("testcomment");
+
+        // then
+        assertEquals("testcomment", relationship.getExposedAggregatesComment());
     }
 
 }

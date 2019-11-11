@@ -50,7 +50,12 @@ public class DockerComposeRelationshipDiscoveryStrategy extends AbstractRelation
             BoundedContext upstreamContext = discoverer.lookupBoundedContext(dependency.dependsOn);
             BoundedContext downstreamContext = discoverer.lookupBoundedContext(dependency.service);
             if (upstreamContext != null && downstreamContext != null) {
-                relationships.add(new Relationship(upstreamContext, downstreamContext));
+                Relationship relationship = new Relationship(upstreamContext, downstreamContext);
+                // We cannot discover 'exposed aggregates' with this Docker strategy. Therefore, we
+                // just add all discovered Aggregates to the 'exposed aggregates'.
+                relationship.addExposedAggregates(upstreamContext.getAggregates());
+                relationship.setExposedAggregatesComment("The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).");
+                relationships.add(relationship);
             }
         }
         return relationships;
