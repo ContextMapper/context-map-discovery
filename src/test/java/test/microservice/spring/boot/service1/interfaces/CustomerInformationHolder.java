@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.microservice.spring.boot;
+package test.microservice.spring.boot.service1.interfaces;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication
-public class Microservice2 {
+@RestController
+@RequestMapping({"/customers"})
+public class CustomerInformationHolder {
+
 }

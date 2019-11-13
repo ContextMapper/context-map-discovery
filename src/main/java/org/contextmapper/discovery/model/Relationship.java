@@ -18,6 +18,9 @@ package org.contextmapper.discovery.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents an upstream-downstream relationship between two Bounded Contexts.
  *
@@ -27,10 +30,13 @@ public class Relationship {
 
     private BoundedContext upstream;
     private BoundedContext downstream;
+    private Set<Aggregate> exposedAggregates;
+    private String exposedAggregatesComment;
 
     public Relationship(BoundedContext upstream, BoundedContext downstream) {
         this.upstream = upstream;
         this.downstream = downstream;
+        this.exposedAggregates = new HashSet<>();
     }
 
     /**
@@ -49,6 +55,56 @@ public class Relationship {
      */
     public BoundedContext getDownstream() {
         return downstream;
+    }
+
+    /**
+     * Gets the exposed Aggregates up the upstream within this relationship.
+     *
+     * @return the set of exposed Aggregates by the upstream context
+     */
+    public Set<Aggregate> getExposedAggregates() {
+        return new HashSet<>(exposedAggregates);
+    }
+
+    /**
+     * Adds a set of Aggregates to the exposed Aggregates of the relationship.
+     *
+     * @param exposedAggregates the set of Aggregates which are exposed
+     */
+    public void addExposedAggregates(Set<Aggregate> exposedAggregates) {
+        for (Aggregate aggregate : exposedAggregates) {
+            addExposedAggregate(aggregate);
+        }
+    }
+
+    /**
+     * Sets a comment regarding how the exposed Aggregates have been discovered.
+     *
+     * @param exposedAggregatesComment the comment explaining how the exposed Aggregates have been discovered
+     */
+    public void setExposedAggregatesComment(String exposedAggregatesComment) {
+        this.exposedAggregatesComment = exposedAggregatesComment;
+    }
+
+    /**
+     * Gets a comment regarding how the exposed Aggregates have been discovered.
+     *
+     * @return the comment explaining how the exposed Aggregates have been discovered
+     */
+    public String getExposedAggregatesComment() {
+        return exposedAggregatesComment;
+    }
+
+    /**
+     * Adds an Aggregate to the exposed Aggregates of the relationship.
+     *
+     * @param aggregate the Aggregate which is exposed
+     */
+    public void addExposedAggregate(Aggregate aggregate) {
+        if (!this.upstream.getAggregates().contains(aggregate))
+            throw new IllegalArgumentException("The exposed Aggregates must be part of the upstream Bounded Context! " +
+                    "('" + aggregate.getName() + "' is not part of '" + upstream.getName() + "')");
+        this.exposedAggregates.add(aggregate);
     }
 
     @Override

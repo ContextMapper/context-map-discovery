@@ -90,15 +90,6 @@ public class Attribute {
         return collectionType;
     }
 
-    /**
-     * Returns whether the reference attribute is a collection of references or not.
-     *
-     * @return true, if the reference attribute is a collection of references. false otherwise.
-     */
-    public boolean isCollection() {
-        return collectionType == null || "".equals(collectionType);
-    }
-
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Attribute))

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.microservice.spring.boot;
+package test.microservice.spring.boot.service1;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

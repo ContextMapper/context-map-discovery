@@ -85,6 +85,15 @@ public class BoundedContext {
     }
 
     /**
+     * Adds an Aggregate to the Bounded Context.
+     *
+     * @param aggregate the Aggregate to be added to the Bounded Context
+     */
+    public void addAggregate(Aggregate aggregate) {
+        this.aggregates.add(aggregate);
+    }
+
+    /**
      * Gets the Aggregates of the Bounded Context.
      *
      * @return the set of Aggregates of the Bounded Context
