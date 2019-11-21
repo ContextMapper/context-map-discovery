@@ -21,6 +21,8 @@ import test.application.spring.boot.model.Address;
 import test.application.spring.boot.model.Customer;
 import test.application.spring.boot.model.CustomerId;
 
+import java.util.List;
+
 @RestController
 @RequestMapping({"/customers"})
 public class CustomerInformationHolder {
@@ -33,6 +35,12 @@ public class CustomerInformationHolder {
 
     @GetMapping({"/{customerId}/"})
     public ResponseEntity<Customer> getCustomer(@PathVariable CustomerId customerId) {
+        // method will never be called; this is just for our reflection (scanning) tests;
+        return null;
+    }
+
+    @GetMapping({"/{customerIds}/"})
+    public ResponseEntity<List<Customer>> getCustomers(@PathVariable List<CustomerId> customerIds) {
         // method will never be called; this is just for our reflection (scanning) tests;
         return null;
     }

@@ -64,7 +64,28 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
     }
 
     @Test
-    public void canDiscoverEntitiesFromResourceMethods() {
+    public void canCreateAggregateRootEntity() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        assertEquals(1, boundedContexts.size());
+        BoundedContext bc = boundedContexts.iterator().next();
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate customers = bc.getAggregates().stream().filter(a -> a.getName().equals("customers")).findFirst().get();
+        Set<DomainObject> domainObjects = customers.getDomainObjects().stream().filter(o -> o.getType().equals(DomainObjectType.ENTITY)).collect(Collectors.toSet());
+        assertEquals(1, domainObjects.size());
+        assertEquals("customers_RootEntity", domainObjects.iterator().next().getName());
+    }
+
+    @Test
+    public void canDiscoverDomainObjectsFromResourceMethods() {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(
@@ -80,14 +101,15 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         assertEquals(1, bc.getAggregates().size());
         Aggregate aggregate = bc.getAggregates().iterator().next();
         assertEquals("customers", aggregate.getName());
-        assertEquals(3, aggregate.getEntities().size());
-        assertTrue(aggregate.getEntities().contains(new Entity("test.application.spring.boot.model.Address", "Address")));
-        assertTrue(aggregate.getEntities().contains(new Entity("test.application.spring.boot.model.CustomerId", "CustomerId")));
-        assertTrue(aggregate.getEntities().contains(new Entity("test.application.spring.boot.model.Customer", "Customer")));
+        Set<DomainObject> resourceDomainObject = aggregate.getDomainObjects().stream().filter(o -> o.getType().equals(DomainObjectType.VALUE_OBJECT)).collect(Collectors.toSet());
+        assertEquals(3, resourceDomainObject.size());
+        assertTrue(resourceDomainObject.contains(new DomainObject(DomainObjectType.VALUE_OBJECT, "Address", "test.application.spring.boot.model.Address")));
+        assertTrue(resourceDomainObject.contains(new DomainObject(DomainObjectType.VALUE_OBJECT, "CustomerId", "test.application.spring.boot.model.CustomerId")));
+        assertTrue(resourceDomainObject.contains(new DomainObject(DomainObjectType.VALUE_OBJECT, "Customer", "test.application.spring.boot.model.Customer")));
     }
 
     @Test
-    public void canDiscoverEntityAttributes() {
+    public void canCreateAggregateRootMethodsFromResourceMethods() {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(
@@ -100,21 +122,58 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Entity addressEntity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Address")).findFirst().get();
-        assertNotNull(addressEntity);
-        assertEquals(4, addressEntity.getAttributes().size());
-        Attribute streetAttribute = addressEntity.getAttributes().stream().filter(a -> a.getName().equals("street")).findFirst().get();
+        DomainObject aggregateRoot = aggregate.getDomainObjects().stream().filter(o -> o.getType().equals(DomainObjectType.ENTITY)).findFirst().get();
+        assertEquals(3, aggregateRoot.getMethods().size());
+        Method changeAddress = aggregateRoot.getMethods().stream().filter(m -> m.getName().equals("changeAddress")).findFirst().get();
+        Method getCustomer = aggregateRoot.getMethods().stream().filter(m -> m.getName().equals("getCustomer")).findFirst().get();
+        Method getCustomers = aggregateRoot.getMethods().stream().filter(m -> m.getName().equals("getCustomers")).findFirst().get();
+        assertNotNull(changeAddress);
+        assertNotNull(getCustomer);
+        assertNotNull(getCustomers);
+        assertEquals("Address", changeAddress.getReturnType().getName());
+        assertEquals("Customer", getCustomer.getReturnType().getName());
+        assertEquals("Customer", getCustomers.getReturnType().getName());
+        assertEquals("List", getCustomers.getReturnCollectionType());
+        Set<String> changeAddressParameterTypes = changeAddress.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
+        Set<String> getCustomerParameterTypes = getCustomer.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
+        Set<String> getCustomersParameterTypes = getCustomer.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
+        Set<String> getCustomersParameterCollectionTypes = getCustomers.getParameters().stream().map(p -> p.getCollectionType()).collect(Collectors.toSet());
+        assertTrue(changeAddressParameterTypes.contains("CustomerId"));
+        assertTrue(changeAddressParameterTypes.contains("Address"));
+        assertTrue(getCustomerParameterTypes.contains("CustomerId"));
+        assertTrue(getCustomersParameterTypes.contains("CustomerId"));
+        assertTrue(getCustomersParameterCollectionTypes.contains("List"));
+    }
+
+    @Test
+    public void canDiscoverDomainObjectAttributes() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot")
+                );
+
+        // when
+        Set<BoundedContext> boundedContexts = discoverer.discoverContextMap().getBoundedContexts();
+
+        // then
+        BoundedContext bc = boundedContexts.iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        DomainObject addressDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Address")).findFirst().get();
+        assertNotNull(addressDomainObject);
+        assertEquals(4, addressDomainObject.getAttributes().size());
+        Attribute streetAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("street")).findFirst().get();
         assertNotNull(streetAttribute);
         assertEquals("street", streetAttribute.getName());
         assertEquals("String", streetAttribute.getType());
-        Attribute plzAttribute = addressEntity.getAttributes().stream().filter(a -> a.getName().equals("plz")).findFirst().get();
+        Attribute plzAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("plz")).findFirst().get();
         assertNotNull(plzAttribute);
         assertEquals("plz", plzAttribute.getName());
         assertEquals("int", plzAttribute.getType());
     }
 
     @Test
-    public void canDiscoverEntityReferences() {
+    public void canDiscoverDomainObjectReferences() {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(
@@ -127,13 +186,13 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Entity customerEntity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
-        Entity customerIdEntity = aggregate.getEntities().stream().filter(e -> e.getName().equals("CustomerId")).findFirst().get();
-        assertNotNull(customerEntity);
-        assertNotNull(customerIdEntity);
-        Set<Reference> singleReferences = customerEntity.getReferences().stream().filter(r -> r.getCollectionType() == null || "".equals(r.getCollectionType())).collect(Collectors.toSet());
+        DomainObject customerDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
+        DomainObject customerIdDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("CustomerId")).findFirst().get();
+        assertNotNull(customerDomainObject);
+        assertNotNull(customerIdDomainObject);
+        Set<Reference> singleReferences = customerDomainObject.getReferences().stream().filter(r -> r.getCollectionType() == null || "".equals(r.getCollectionType())).collect(Collectors.toSet());
         assertEquals(1, singleReferences.size());
-        assertEquals(customerIdEntity, singleReferences.iterator().next().getType());
+        assertEquals(customerIdDomainObject, singleReferences.iterator().next().getType());
     }
 
     @Test
@@ -150,10 +209,10 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Entity customerEntity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
-        assertNotNull(customerEntity);
-        assertEquals(4, customerEntity.getReferences().size());
-        Set<Reference> collectionReferences = customerEntity.getReferences().stream().filter(r -> r.getCollectionType() != null).collect(Collectors.toSet());
+        DomainObject customerDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
+        assertNotNull(customerDomainObject);
+        assertEquals(4, customerDomainObject.getReferences().size());
+        Set<Reference> collectionReferences = customerDomainObject.getReferences().stream().filter(r -> r.getCollectionType() != null).collect(Collectors.toSet());
         assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("List")).findFirst().get().getType().getName());
         assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("Set")).findFirst().get().getType().getName());
         assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("Collection")).findFirst().get().getType().getName());
@@ -173,9 +232,9 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Entity addressEntity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Address")).findFirst().get();
-        assertNotNull(addressEntity);
-        Attribute arrayAttribute = addressEntity.getAttributes().stream().filter(a -> a.getName().equals("arrayTest")).findFirst().get();
+        DomainObject addressDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Address")).findFirst().get();
+        assertNotNull(addressDomainObject);
+        Attribute arrayAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("arrayTest")).findFirst().get();
         assertNotNull(arrayAttribute);
         assertEquals("String", arrayAttribute.getType());
         assertEquals("List", arrayAttribute.getCollectionType());
@@ -202,11 +261,11 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
     }
 
     @Test
-    public void canHandleMultipleEntitiesWithSameName() {
+    public void canHandleMultipleDomainObjectsWithSameName() {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(
-                        new SpringBootBoundedContextDiscoveryStrategy("test.duplicate.entity.name")
+                        new SpringBootBoundedContextDiscoveryStrategy("test.duplicate.domainobject.name")
                 );
 
         // when
@@ -217,10 +276,10 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         BoundedContext bc = boundedContexts.iterator().next();
         assertEquals(1, bc.getAggregates().size());
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Set<String> entityNames = aggregate.getEntities().stream().map(e -> e.getName()).collect(Collectors.toSet());
-        assertTrue(entityNames.contains("CustomerId"));
-        assertTrue(entityNames.contains("customers_CustomerId"));
-        assertTrue(entityNames.contains("customers_CustomerId_1"));
+        Set<String> domainObjectNames = aggregate.getDomainObjects().stream().map(e -> e.getName()).collect(Collectors.toSet());
+        assertTrue(domainObjectNames.contains("CustomerId"));
+        assertTrue(domainObjectNames.contains("customers_CustomerId"));
+        assertTrue(domainObjectNames.contains("customers_CustomerId_1"));
     }
 
     @Test
@@ -237,11 +296,11 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        assertEquals("This Aggregate has been created on the basis of the Spring REST controller test.application.spring.boot.interfaces.CustomerInformationHolder.", aggregate.getDiscoveryComment());
+        assertEquals("This Aggregate has been created on the basis of the RESTful HTTP controller test.application.spring.boot.interfaces.CustomerInformationHolder.", aggregate.getDiscoveryComment());
     }
 
     @Test
-    public void canCreateDiscoveryCommentOnEntity() {
+    public void canCreateDiscoveryCommentOnDomainObject() {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(
@@ -254,7 +313,7 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         // then
         BoundedContext bc = boundedContexts.iterator().next();
         Aggregate aggregate = bc.getAggregates().iterator().next();
-        Entity entity = aggregate.getEntities().stream().filter(e -> e.getName().equals("Address")).findAny().get();
-        assertEquals("This entity has been derived from the class test.application.spring.boot.model.Address.", entity.getDiscoveryComment());
+        DomainObject domainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Address")).findAny().get();
+        assertEquals("This value object has been derived from the class test.application.spring.boot.model.Address.", domainObject.getDiscoveryComment());
     }
 }

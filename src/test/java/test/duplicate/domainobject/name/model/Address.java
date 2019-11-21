@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.duplicate.entity.name.model.duplicate2;
+package test.duplicate.domainobject.name.model;
 
-public class CustomerId {
+public class Address {
 
-    private String id;
+    private String street;
+    private String city;
+    private int plz;
+    private String[] arrayTest;
 
+    public int getPlz() {
+        return plz;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
 }

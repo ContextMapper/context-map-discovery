@@ -5,63 +5,111 @@ ContextMap {
 	contains CustomerCore
 
 	CustomerCore -> PolicyManagement {
-		exposedAggregates CustomerCore_cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
+		exposedAggregates cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
 	}
 
 	CustomerCore -> CustomerManagement {
-		exposedAggregates CustomerCore_cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
+		exposedAggregates cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
 	}
 
 	PolicyManagement -> CustomerSelfService {
-		exposedAggregates riskfactor, PolicyManagement_insurance_quote_requests, policies, PolicyManagement_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
+		exposedAggregates insurance_quote_requests, customers, riskfactor, policies // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
 	}
 
 	CustomerCore -> CustomerSelfService {
-		exposedAggregates CustomerCore_cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
+		exposedAggregates cities, CustomerCore_customers // The list of exposed Aggregates may contain Aggregates which are not used by the downstream (discovery strategy simply added all Aggregates).
 	}
 
 }
 
 BoundedContext PolicyManagement {
 	implementationTechnology "Spring Boot"
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.policymanagement.interfaces.RiskComputationService.
-	Aggregate riskfactor
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.policymanagement.interfaces.InsuranceQuoteRequestInformationHolder.
-	Aggregate PolicyManagement_insurance_quote_requests {
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.insurancequoterequest.InsuranceQuoteRequestDto.
-		Entity PolicyManagement_insurance_quote_requests_InsuranceQuoteRequestDto {
-			String policyId
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.policymanagement.interfaces.InsuranceQuoteRequestInformationHolder.
+	Aggregate insurance_quote_requests {
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.insurancequoterequest.InsuranceQuoteRequestDto.
+		ValueObject InsuranceQuoteRequestDto {
 			List<RequestStatusChangeDto> statusHistory
-			CustomerInfoDto customerInfo
+			String policyId
 			InsuranceOptionsDto insuranceOptions
-			Date date
-			InsuranceQuoteDto insuranceQuote
+			CustomerInfoDto customerInfo
 			Long id
+			InsuranceQuoteDto insuranceQuote
+			Date date
+		}
+		Entity insurance_quote_requests_RootEntity {
+			aggregateRoot
+			def List<@InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
+			def @InsuranceQuoteRequestDto getInsuranceQuoteRequest;
 		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.policymanagement.interfaces.PolicyInformationHolder.
-	Aggregate policies {
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.domain.policy.PolicyId.
-		Entity PolicyId {
-			long serialVersionUID
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.policymanagement.interfaces.CustomerInformationHolder.
+	Aggregate customers {
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.CustomerIdDto.
+		ValueObject CustomerIdDto {
 			String id
 		}
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PolicyDto.
-		Entity PolicyDto {
+		Entity customers_RootEntity {
+			aggregateRoot
+			def @CustomerDto getCustomer (@CustomerIdDto customerIdDto);
+			def List<@customers_PolicyDto> getPolicies (@CustomerIdDto customerIdDto);
+			def @PaginatedCustomerResponseDto getCustomers;
+		}
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.CustomerDto.
+		ValueObject CustomerDto {
+			String customerId
+			CustomerProfileDto customerProfile
 			List<Link> links
-			PolicyPeriodDto policyPeriod
-			String policyId
-			MoneyAmountDto policyLimit
-			List<String> expandable
+			- List<CustomerDto> customers
+		}
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PolicyDto.
+		ValueObject customers_PolicyDto {
 			Object customer
 			Date creationDate
+			String policyType
 			InsuringAgreementDto insuringAgreement
+			MoneyAmountDto insurancePremium
+			List<Link> links
+			MoneyAmountDto policyLimit
+			PolicyPeriodDto policyPeriod
+			String policyId
+			MoneyAmountDto deductible
+			List<String> expandable
+		}
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.PaginatedCustomerResponseDto.
+		ValueObject PaginatedCustomerResponseDto {
+			int offset
+			int ^size
+			String filter
+			int limit
+			List<Link> links
+			- List<CustomerDto> customers
+		}
+	}
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.policymanagement.interfaces.RiskComputationService.
+	Aggregate riskfactor {
+		Entity riskfactor_RootEntity {
+			aggregateRoot
+		}
+	}
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.policymanagement.interfaces.PolicyInformationHolder.
+	Aggregate policies {
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PolicyDto.
+		ValueObject PolicyDto {
+			MoneyAmountDto insurancePremium
+			List<String> expandable
+			String policyId
 			String policyType
 			MoneyAmountDto deductible
-			MoneyAmountDto insurancePremium
+			List<Link> links
+			MoneyAmountDto policyLimit
+			PolicyPeriodDto policyPeriod
+			InsuringAgreementDto insuringAgreement
+			Date creationDate
+			Object customer
+			- List<PolicyDto> policies
 		}
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.CreatePolicyRequestDto.
-		Entity CreatePolicyRequestDto {
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.CreatePolicyRequestDto.
+		ValueObject CreatePolicyRequestDto {
 			MoneyAmountDto insurancePremium
 			InsuringAgreementDto insuringAgreement
 			MoneyAmountDto policyLimit
@@ -70,204 +118,263 @@ BoundedContext PolicyManagement {
 			String policyType
 			MoneyAmountDto deductible
 		}
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PaginatedPolicyResponseDto.
-		Entity PaginatedPolicyResponseDto {
+		Entity policies_RootEntity {
+			aggregateRoot
+			def @PolicyDto getPolicy (@PolicyId policyId);
+			def @PolicyDto updatePolicy (@CreatePolicyRequestDto createPolicyDto, @PolicyId policyId);
+			def @PaginatedPolicyResponseDto getPolicies;
+		}
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PaginatedPolicyResponseDto.
+		ValueObject PaginatedPolicyResponseDto {
 			int limit
 			List<Link> links
 			int offset
 			int ^size
 			- List<PolicyDto> policies
 		}
-	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.policymanagement.interfaces.CustomerInformationHolder.
-	Aggregate PolicyManagement_customers {
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.CustomerIdDto.
-		Entity CustomerIdDto {
+		// This value object has been derived from the class com.lakesidemutual.policymanagement.domain.policy.PolicyId.
+		ValueObject PolicyId {
+			long serialVersionUID
 			String id
-		}
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.PaginatedCustomerResponseDto.
-		Entity PaginatedCustomerResponseDto {
-			String filter
-			int ^size
-			int offset
-			List<Link> links
-			int limit
-			- List<PolicyManagement_customers_CustomerDto> customers
-		}
-		// This entity has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.CustomerDto.
-		Entity PolicyManagement_customers_CustomerDto {
-			CustomerProfileDto customerProfile
-			String customerId
-			List<Link> links
 		}
 	}
 }
 
 BoundedContext CustomerManagement {
 	implementationTechnology "Spring Boot"
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customermanagement.interfaces.CustomerInformationHolder.
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customermanagement.interfaces.CustomerInformationHolder.
 	Aggregate CustomerManagement_customers {
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.CustomerDto.
-		Entity CustomerManagement_customers_CustomerDto {
-			String customerId
-			List<Link> links
-			- CustomerProfileDto customerProfile
-		}
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.CustomerProfileDto.
-		Entity CustomerProfileDto {
-			Date birthday
-			List<AddressDto> moveHistory
-			String firstname
-			AddressDto currentAddress
-			String phoneNumber
-			String lastname
-			String ^email
-		}
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.PaginatedCustomerResponseDto.
-		Entity CustomerManagement_customers_PaginatedCustomerResponseDto {
-			int offset
-			int ^size
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.PaginatedCustomerResponseDto.
+		ValueObject CustomerManagement_customers_PaginatedCustomerResponseDto {
 			String filter
-			int limit
+			int ^size
+			int offset
 			List<Link> links
+			int limit
 			- List<CustomerManagement_customers_CustomerDto> customers
 		}
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.domain.customer.CustomerId.
-		Entity CustomerManagement_customers_CustomerId
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.CustomerDto.
+		ValueObject CustomerManagement_customers_CustomerDto {
+			List<Link> links
+			String customerId
+			- CustomerProfileDto customerProfile - List<CustomerManagement_customers_CustomerDto> customers
+		}
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.CustomerProfileDto.
+		ValueObject CustomerProfileDto {
+			List<AddressDto> moveHistory
+			String firstname
+			String phoneNumber
+			Date birthday
+			String lastname
+			String ^email
+			AddressDto currentAddress
+			- CustomerProfileDto customerProfile
+		}
+		Entity CustomerManagement_customers_RootEntity {
+			aggregateRoot
+			def @CustomerManagement_customers_PaginatedCustomerResponseDto getCustomers;
+			def @CustomerManagement_customers_CustomerDto getCustomer (@CustomerManagement_customers_CustomerId customerId);
+			def @CustomerManagement_customers_CustomerDto updateCustomer (@CustomerManagement_customers_CustomerId customerId, @CustomerProfileDto customerProfile);
+		}
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.domain.customer.CustomerId.
+		ValueObject CustomerManagement_customers_CustomerId {
+			long serialVersionUID
+			String id
+		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customermanagement.interfaces.InteractionLogInformationHolder.
-	Aggregate interaction_logs {
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.domain.interactionlog.InteractionLogAggregateRoot.
-		Entity InteractionLogAggregateRoot {
-			Collection<InteractionEntity> interactions
-			String lastAcknowledgedInteractionId
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customermanagement.interfaces.NotificationInformationHolder.
+	Aggregate notifications {
+		Entity notifications_RootEntity {
+			aggregateRoot
+			def List<@NotificationDto> getNotifications;
+		}
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.NotificationDto.
+		ValueObject NotificationDto {
+			int count
 			String customerId
 			String username
 		}
-		// This entity has been derived from the class com.lakesidemutual.customermanagement.domain.customer.CustomerId.
-		Entity interaction_logs_CustomerId {
-			String id
+	}
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customermanagement.interfaces.InteractionLogInformationHolder.
+	Aggregate interaction_logs {
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.domain.customer.CustomerId.
+		ValueObject interaction_logs_CustomerId {
 			long serialVersionUID
+			String id
+		}
+		// This value object has been derived from the class com.lakesidemutual.customermanagement.domain.interactionlog.InteractionLogAggregateRoot.
+		ValueObject InteractionLogAggregateRoot {
+			String customerId
+			String lastAcknowledgedInteractionId
+			String username
+			Collection<InteractionEntity> interactions
+		}
+		Entity interaction_logs_RootEntity {
+			aggregateRoot
+			def @InteractionLogAggregateRoot getInteractionLog (@interaction_logs_CustomerId customerId);
 		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customermanagement.interfaces.NotificationInformationHolder.
-	Aggregate notifications
 }
 
 BoundedContext CustomerSelfService {
 	implementationTechnology "Spring Boot"
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customerselfservice.interfaces.AuthenticationController.
-	Aggregate auth
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customerselfservice.interfaces.CityStaticDataHolder.
-	Aggregate cities {
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.city.CitiesResponseDto.
-		Entity CitiesResponseDto {
-			List<String> cities
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.AuthenticationController.
+	Aggregate auth {
+		Entity auth_RootEntity {
+			aggregateRoot
 		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customerselfservice.interfaces.CustomerInformationHolder.
-	Aggregate customers {
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.customer.AddressDto.
-		Entity AddressDto {
-			String city
-			String postalCode
-			String streetAddress
-		}
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.customer.CustomerDto.
-		Entity CustomerDto {
-			CustomerProfileDto customerProfile
-			List<Link> links
-			String customerId
-		}
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.domain.customer.CustomerId.
-		Entity CustomerId {
-			long serialVersionUID
-			String id
-		}
-	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customerselfservice.interfaces.InsuranceQuoteRequestInformationHolder.
-	Aggregate insurance_quote_requests {
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.insurancequoterequest.InsuranceQuoteRequestDto.
-		Entity InsuranceQuoteRequestDto {
-			InsuranceQuoteDto insuranceQuote
-			Long id
-			String policyId
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.InsuranceQuoteRequestInformationHolder.
+	Aggregate CustomerSelfService_insurance_quote_requests {
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.insurancequoterequest.InsuranceQuoteRequestDto.
+		ValueObject CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto {
 			List<RequestStatusChangeDto> statusHistory
+			Long id
 			Date date
+			InsuranceQuoteDto insuranceQuote
 			InsuranceOptionsDto insuranceOptions
 			CustomerInfoDto customerInfo
+			String policyId
+		}
+		Entity CustomerSelfService_insurance_quote_requests_RootEntity {
+			aggregateRoot
+			def @CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto getInsuranceQuoteRequest;
+			def List<@CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
 		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customerselfservice.interfaces.UserInformationHolder.
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.CityStaticDataHolder.
+	Aggregate CustomerSelfService_cities {
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.city.CitiesResponseDto.
+		ValueObject CustomerSelfService_cities_CitiesResponseDto {
+			List<String> cities
+		}
+		Entity CustomerSelfService_cities_RootEntity {
+			aggregateRoot
+			def @CustomerSelfService_cities_CitiesResponseDto getCitiesForPostalCode;
+		}
+	}
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.UserInformationHolder.
 	Aggregate user {
-		// This entity has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.identityaccess.UserResponseDto.
-		Entity UserResponseDto {
-			String customerId
+		Entity user_RootEntity {
+			aggregateRoot
+			def @UserResponseDto getCurrentUser;
+		}
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.identityaccess.UserResponseDto.
+		ValueObject UserResponseDto {
 			String ^email
+			String customerId
+		}
+	}
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.CustomerInformationHolder.
+	Aggregate CustomerSelfService_customers {
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.insurancequoterequest.InsuranceQuoteRequestDto.
+		ValueObject CustomerSelfService_customers_InsuranceQuoteRequestDto {
+			String policyId
+			List<RequestStatusChangeDto> statusHistory
+			CustomerInfoDto customerInfo
+			InsuranceOptionsDto insuranceOptions
+			Long id
+			InsuranceQuoteDto insuranceQuote
+			Date date
+		}
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.customer.CustomerDto.
+		ValueObject CustomerSelfService_customers_CustomerDto {
+			String customerId
+			List<Link> links
+			CustomerProfileDto customerProfile
+		}
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.domain.customer.CustomerId.
+		ValueObject CustomerSelfService_customers_CustomerId {
+			String id
+			long serialVersionUID
+		}
+		Entity CustomerSelfService_customers_RootEntity {
+			aggregateRoot
+			def @CustomerSelfService_customers_AddressDto changeAddress (@CustomerSelfService_customers_CustomerId customerId, @CustomerSelfService_customers_AddressDto requestDto);
+			def @CustomerSelfService_customers_CustomerDto getCustomer (@CustomerSelfService_customers_CustomerId customerId);
+			def List<@CustomerSelfService_customers_InsuranceQuoteRequestDto> getInsuranceQuoteRequests (@CustomerSelfService_customers_CustomerId customerId);
+		}
+		// This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.customer.AddressDto.
+		ValueObject CustomerSelfService_customers_AddressDto {
+			String streetAddress
+			String city
+			String postalCode
 		}
 	}
 }
 
 BoundedContext CustomerCore {
 	implementationTechnology "Spring Boot"
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customercore.interfaces.CityStaticDataHolder.
-	Aggregate CustomerCore_cities {
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.city.CitiesResponseDto.
-		Entity CustomerCore_cities_CitiesResponseDto {
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customercore.interfaces.CityStaticDataHolder.
+	Aggregate cities {
+		Entity cities_RootEntity {
+			aggregateRoot
+			def @CitiesResponseDto getCitiesForPostalCode;
+		}
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.city.CitiesResponseDto.
+		ValueObject CitiesResponseDto {
 			List<String> cities
 		}
 	}
-	// This Aggregate has been created on the basis of the Spring REST controller com.lakesidemutual.customercore.interfaces.CustomerInformationHolder.
+	// This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customercore.interfaces.CustomerInformationHolder.
 	Aggregate CustomerCore_customers {
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomerResponseDto.
-		Entity CustomerResponseDto {
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.AddressDto.
+		ValueObject AddressDto {
+			String streetAddress
+			String city
+			String postalCode
+		}
+		// This value object has been derived from the class com.lakesidemutual.customercore.domain.customer.CustomerId.
+		ValueObject CustomerId {
+			String id
+			long serialVersionUID
+		}
+		Entity CustomerCore_customers_RootEntity {
+			aggregateRoot
+			def @CustomerResponseDto updateCustomer (@CustomerId customerId, @CustomerProfileUpdateRequestDto requestDto);
+			def @CustomersResponseDto getCustomer;
+			def @AddressDto changeAddress (@AddressDto requestDto, @CustomerId customerId);
+			def @CustomerCore_customers_PaginatedCustomerResponseDto getCustomers;
+		}
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomerProfileUpdateRequestDto.
+		ValueObject CustomerProfileUpdateRequestDto {
+			String lastname
+			Date birthday
+			String phoneNumber
+			String streetAddress
+			String city
+			String ^email
+			String postalCode
+			String firstname
+		}
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomerResponseDto.
+		ValueObject CustomerResponseDto {
+			String phoneNumber
+			String lastname
+			String streetAddress
 			Collection<Address> moveHistory
 			String firstname
-			String lastname
+			String ^email
 			String city
-			List<Link> links
-			String phoneNumber
-			Date birthday
 			String postalCode
+			Date birthday
 			String customerId
-			String ^email
-			String streetAddress
+			List<Link> links
+			- List<CustomerResponseDto> customers - List<CustomerResponseDto> customers
 		}
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomerProfileUpdateRequestDto.
-		Entity CustomerProfileUpdateRequestDto {
-			String ^email
-			String postalCode
-			String streetAddress
-			String firstname
-			String phoneNumber
-			String lastname
-			Date birthday
-			String city
-		}
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomersResponseDto.
-		Entity CustomersResponseDto {
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomersResponseDto.
+		ValueObject CustomersResponseDto {
 			List<Link> links
 			- List<CustomerResponseDto> customers
 		}
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.AddressDto.
-		Entity CustomerCore_customers_AddressDto {
-			String city
-			String postalCode
-			String streetAddress
-		}
-		// This entity has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.PaginatedCustomerResponseDto.
-		Entity CustomerCore_customers_PaginatedCustomerResponseDto {
+		// This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.PaginatedCustomerResponseDto.
+		ValueObject CustomerCore_customers_PaginatedCustomerResponseDto {
 			List<Link> links
+			String filter
 			int limit
 			int offset
 			int ^size
-			String filter
 			- List<CustomerResponseDto> customers
-		}
-		// This entity has been derived from the class com.lakesidemutual.customercore.domain.customer.CustomerId.
-		Entity CustomerCore_customers_CustomerId {
-			String id
-			long serialVersionUID
 		}
 	}
 }

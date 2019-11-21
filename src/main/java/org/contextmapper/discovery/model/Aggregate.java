@@ -29,12 +29,12 @@ import java.util.Set;
 public class Aggregate {
 
     private String name;
-    private Set<Entity> entities;
+    private Set<DomainObject> domainObjects;
     private String discoveryComment;
 
     public Aggregate(String name) {
         setName(name);
-        this.entities = new HashSet<>();
+        this.domainObjects = new HashSet<>();
     }
 
     /**
@@ -58,30 +58,33 @@ public class Aggregate {
     }
 
     /**
-     * Adds an entity to the Aggregate.
+     * Adds a domain object to the Aggregate.
      *
-     * @param entity the entity to be added to the Aggregate
+     * @param domainObject the domain object to be added to the Aggregate
      */
-    public void addEntity(Entity entity) {
-        this.entities.add(entity);
+    public void addDomainObject(DomainObject domainObject) {
+        this.domainObjects.add(domainObject);
+        domainObject.setParent(this);
     }
 
     /**
-     * Adds all entities in the given set to the Aggregate.
+     * Adds all domain objects in the given set to the Aggregate.
      *
-     * @param entities the set of entities to be added to the Aggregate
+     * @param domainObjects the set of domain objects to be added to the Aggregate
      */
-    public void addEntities(Set<Entity> entities) {
-        this.entities.addAll(entities);
+    public void addDomainObjects(Set<DomainObject> domainObjects) {
+        for (DomainObject domainObject : domainObjects) {
+            this.addDomainObject(domainObject);
+        }
     }
 
     /**
-     * Gets the set of entities within the Aggregate.
+     * Gets the set of domain objects within the Aggregate.
      *
-     * @return the set of entities which are part of the Aggregate
+     * @return the set of domain objects which are part of the Aggregate
      */
-    public Set<Entity> getEntities() {
-        return new HashSet<>(entities);
+    public Set<DomainObject> getDomainObjects() {
+        return new HashSet<>(domainObjects);
     }
 
     /**

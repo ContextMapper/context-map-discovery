@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.duplicate.entity.name.model.duplicate1;
+package test.duplicate.domainobject.name.model;
 
 public class CustomerId {
 
