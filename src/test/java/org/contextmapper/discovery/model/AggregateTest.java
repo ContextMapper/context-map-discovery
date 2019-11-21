@@ -49,16 +49,16 @@ public class AggregateTest {
     }
 
     @Test
-    public void canAddEntity() {
+    public void canAddDomainObject() {
         // given
         Aggregate aggregate = new Aggregate("TestAggregate");
 
         // when
-        aggregate.addEntity(new Entity("test.Entity", "Entity"));
+        aggregate.addDomainObject(new DomainObject(DomainObjectType.ENTITY, "Entity", "test.Entity"));
 
         // then
-        assertEquals(1, aggregate.getEntities().size());
-        assertEquals(new Entity("test.Entity", "Entity"), aggregate.getEntities().iterator().next());
+        assertEquals(1, aggregate.getDomainObjects().size());
+        assertEquals(new DomainObject(DomainObjectType.ENTITY, "Entity", "test.Entity"), aggregate.getDomainObjects().iterator().next());
     }
 
     @Test

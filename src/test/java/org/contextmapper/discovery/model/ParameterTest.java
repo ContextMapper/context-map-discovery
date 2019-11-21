@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.duplicate.entity.name.model;
+package org.contextmapper.discovery.model;
 
-public class Address {
+import org.junit.jupiter.api.Test;
 
-    private String street;
-    private String city;
-    private int plz;
-    private String[] arrayTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    public int getPlz() {
-        return plz;
+public class ParameterTest {
+
+    @Test
+    public void canCreateParameter() {
+        // given
+        DomainObject type = new DomainObject(DomainObjectType.VALUE_OBJECT, "TestType");
+
+        // when
+        Parameter parameter = new Parameter("testParameter", type);
+
+        // then
+        assertEquals("testParameter", parameter.getName());
+        assertEquals("TestType", parameter.getType().getName());
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
 }

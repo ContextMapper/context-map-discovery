@@ -13,10 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.duplicate.entity.name;
+package test.duplicate.domainobject.name.model;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-@SpringBootApplication
-public class TestSpringBootApplication {
+public class Customer {
+
+    private CustomerId id;
+    private List<Address> addressList;
+    private Set<Address> addressSet;
+    private Collection<Address> addressCollection;
+
+    public CustomerId getId() {
+        return id;
+    }
+
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    public Collection<Address> getAddressCollection() {
+        return addressCollection;
+    }
+
+    public Set<Address> getAddressSet() {
+        return addressSet;
+    }
 }

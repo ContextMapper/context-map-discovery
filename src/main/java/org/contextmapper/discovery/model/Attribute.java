@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class Attribute {
 
-    private Entity parent;
+    private DomainObject parent;
     private String name;
     private String type;
     private String collectionType;
@@ -55,20 +55,20 @@ public class Attribute {
     }
 
     /**
-     * Gets the parent entity containing this attribute.
+     * Gets the parent domain object containing this attribute.
      *
-     * @return the parent entity containing this attribute
+     * @return the parent domain object containing this attribute
      */
-    public Entity getParent() {
+    public DomainObject getParent() {
         return parent;
     }
 
     /**
-     * Sets the parent entity containing this attribute.
+     * Sets the parent domain object containing this attribute.
      *
-     * @param parent the parent entity containing this attribute
+     * @param parent the parent domain object containing this attribute
      */
-    public void setParent(Entity parent) {
+    public void setParent(DomainObject parent) {
         this.parent = parent;
     }
 

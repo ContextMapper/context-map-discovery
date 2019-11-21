@@ -25,12 +25,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class Reference {
 
-    private Entity parent;
+    private DomainObject parent;
     private String name;
-    private Entity type;
+    private DomainObject type;
     private String collectionType;
 
-    public Reference(Entity type, String name) {
+    public Reference(DomainObject type, String name) {
         this.type = type;
         this.name = name;
     }
@@ -45,11 +45,11 @@ public class Reference {
     }
 
     /**
-     * Gets the type ({@link Entity}) of the reference attribute.
+     * Gets the type ({@link DomainObject}) of the reference attribute.
      *
-     * @return the type ({@link Entity}) of the reference attribute
+     * @return the type ({@link DomainObject}) of the reference attribute
      */
-    public Entity getType() {
+    public DomainObject getType() {
         return type;
     }
 
@@ -58,7 +58,7 @@ public class Reference {
      *
      * @return the parent entity containing this reference attribute
      */
-    public Entity getParent() {
+    public DomainObject getParent() {
         return parent;
     }
 
@@ -67,7 +67,7 @@ public class Reference {
      *
      * @param parent the parent entity containing this reference attribute
      */
-    public void setParent(Entity parent) {
+    public void setParent(DomainObject parent) {
         this.parent = parent;
     }
 
