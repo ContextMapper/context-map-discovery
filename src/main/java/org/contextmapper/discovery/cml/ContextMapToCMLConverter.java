@@ -46,11 +46,6 @@ public class ContextMapToCMLConverter {
         }
 
         for (Relationship relationship : inputMap.getRelationships()) {
-            UpstreamDownstreamRelationship upstreamDownstreamRelationship = convert(relationship);
-            if (!contextMap.getBoundedContexts().contains(upstreamDownstreamRelationship.getUpstream()))
-                contextMap.getBoundedContexts().add(upstreamDownstreamRelationship.getUpstream());
-            if (!contextMap.getBoundedContexts().contains(upstreamDownstreamRelationship.getDownstream()))
-                contextMap.getBoundedContexts().add(upstreamDownstreamRelationship.getDownstream());
             contextMap.getRelationships().add(convert(relationship));
         }
 
@@ -97,8 +92,6 @@ public class ContextMapToCMLConverter {
     private Entity convertDomainObjectToEntity(org.contextmapper.discovery.model.DomainObject inputDomainObject) {
         Entity entity = TacticdslFactory.eINSTANCE.createEntity();
         entity.setName(inputDomainObject.getName());
-        if (inputDomainObject.getDiscoveryComment() != null && !"".equals(inputDomainObject.getDiscoveryComment()))
-            entity.setComment("// " + inputDomainObject.getDiscoveryComment());
         domainObjectLookupMap.put(inputDomainObject, entity);
         return entity;
     }
