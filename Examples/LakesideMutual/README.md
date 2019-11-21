@@ -91,8 +91,8 @@ BoundedContext PolicyManagement {
     }
     Entity insurance_quote_requests_RootEntity {
       aggregateRoot
-      def List<@InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
-      def @InsuranceQuoteRequestDto getInsuranceQuoteRequest;
+      * List<@InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
+      * @InsuranceQuoteRequestDto getInsuranceQuoteRequest;
     }
   }
   // This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.policymanagement.interfaces.CustomerInformationHolder.
@@ -103,16 +103,15 @@ BoundedContext PolicyManagement {
     }
     Entity customers_RootEntity {
       aggregateRoot
-      def @CustomerDto getCustomer (@CustomerIdDto customerIdDto);
-      def List<@customers_PolicyDto> getPolicies (@CustomerIdDto customerIdDto);
-      def @PaginatedCustomerResponseDto getCustomers;
+      * @CustomerDto getCustomer (@CustomerIdDto customerIdDto);
+      * List<@customers_PolicyDto> getPolicies (@CustomerIdDto customerIdDto);
+      * @PaginatedCustomerResponseDto getCustomers;
     }
     // This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.customer.CustomerDto.
     ValueObject CustomerDto {
       String customerId
       CustomerProfileDto customerProfile
       List<Link> links
-      - List<CustomerDto> customers
     }
     // This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PolicyDto.
     ValueObject customers_PolicyDto {
@@ -159,7 +158,6 @@ BoundedContext PolicyManagement {
       InsuringAgreementDto insuringAgreement
       Date creationDate
       Object customer
-      - List<PolicyDto> policies
     }
     // This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.CreatePolicyRequestDto.
     ValueObject CreatePolicyRequestDto {
@@ -173,9 +171,9 @@ BoundedContext PolicyManagement {
     }
     Entity policies_RootEntity {
       aggregateRoot
-      def @PolicyDto getPolicy (@PolicyId policyId);
-      def @PolicyDto updatePolicy (@CreatePolicyRequestDto createPolicyDto, @PolicyId policyId);
-      def @PaginatedPolicyResponseDto getPolicies;
+      * @PolicyDto getPolicy (@PolicyId policyId);
+      * @PolicyDto updatePolicy (@CreatePolicyRequestDto createPolicyDto, @PolicyId policyId);
+      * @PaginatedPolicyResponseDto getPolicies;
     }
     // This value object has been derived from the class com.lakesidemutual.policymanagement.interfaces.dtos.policy.PaginatedPolicyResponseDto.
     ValueObject PaginatedPolicyResponseDto {
@@ -210,7 +208,7 @@ BoundedContext CustomerManagement {
     ValueObject CustomerManagement_customers_CustomerDto {
       List<Link> links
       String customerId
-      - CustomerProfileDto customerProfile - List<CustomerManagement_customers_CustomerDto> customers
+      - CustomerProfileDto customerProfile
     }
     // This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.CustomerProfileDto.
     ValueObject CustomerProfileDto {
@@ -221,13 +219,12 @@ BoundedContext CustomerManagement {
       String lastname
       String ^email
       AddressDto currentAddress
-      - CustomerProfileDto customerProfile
     }
     Entity CustomerManagement_customers_RootEntity {
       aggregateRoot
-      def @CustomerManagement_customers_PaginatedCustomerResponseDto getCustomers;
-      def @CustomerManagement_customers_CustomerDto getCustomer (@CustomerManagement_customers_CustomerId customerId);
-      def @CustomerManagement_customers_CustomerDto updateCustomer (@CustomerManagement_customers_CustomerId customerId, @CustomerProfileDto customerProfile);
+      * @CustomerManagement_customers_PaginatedCustomerResponseDto getCustomers;
+      * @CustomerManagement_customers_CustomerDto getCustomer (@CustomerManagement_customers_CustomerId customerId);
+      * @CustomerManagement_customers_CustomerDto updateCustomer (@CustomerManagement_customers_CustomerId customerId, @CustomerProfileDto customerProfile);
     }
     // This value object has been derived from the class com.lakesidemutual.customermanagement.domain.customer.CustomerId.
     ValueObject CustomerManagement_customers_CustomerId {
@@ -239,7 +236,7 @@ BoundedContext CustomerManagement {
   Aggregate notifications {
     Entity notifications_RootEntity {
       aggregateRoot
-      def List<@NotificationDto> getNotifications;
+      * List<@NotificationDto> getNotifications;
     }
     // This value object has been derived from the class com.lakesidemutual.customermanagement.interfaces.dtos.NotificationDto.
     ValueObject NotificationDto {
@@ -264,7 +261,7 @@ BoundedContext CustomerManagement {
     }
     Entity interaction_logs_RootEntity {
       aggregateRoot
-      def @InteractionLogAggregateRoot getInteractionLog (@interaction_logs_CustomerId customerId);
+      * @InteractionLogAggregateRoot getInteractionLog (@interaction_logs_CustomerId customerId);
     }
   }
 }
@@ -291,8 +288,8 @@ BoundedContext CustomerSelfService {
     }
     Entity CustomerSelfService_insurance_quote_requests_RootEntity {
       aggregateRoot
-      def @CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto getInsuranceQuoteRequest;
-      def List<@CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
+      * @CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto getInsuranceQuoteRequest;
+      * List<@CustomerSelfService_insurance_quote_requests_InsuranceQuoteRequestDto> getInsuranceQuoteRequests;
     }
   }
   // This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.CityStaticDataHolder.
@@ -303,14 +300,14 @@ BoundedContext CustomerSelfService {
     }
     Entity CustomerSelfService_cities_RootEntity {
       aggregateRoot
-      def @CustomerSelfService_cities_CitiesResponseDto getCitiesForPostalCode;
+      * @CustomerSelfService_cities_CitiesResponseDto getCitiesForPostalCode;
     }
   }
   // This Aggregate has been created on the basis of the RESTful HTTP controller com.lakesidemutual.customerselfservice.interfaces.UserInformationHolder.
   Aggregate user {
     Entity user_RootEntity {
       aggregateRoot
-      def @UserResponseDto getCurrentUser;
+      * @UserResponseDto getCurrentUser;
     }
     // This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.identityaccess.UserResponseDto.
     ValueObject UserResponseDto {
@@ -343,9 +340,9 @@ BoundedContext CustomerSelfService {
     }
     Entity CustomerSelfService_customers_RootEntity {
       aggregateRoot
-      def @CustomerSelfService_customers_AddressDto changeAddress (@CustomerSelfService_customers_CustomerId customerId, @CustomerSelfService_customers_AddressDto requestDto);
-      def @CustomerSelfService_customers_CustomerDto getCustomer (@CustomerSelfService_customers_CustomerId customerId);
-      def List<@CustomerSelfService_customers_InsuranceQuoteRequestDto> getInsuranceQuoteRequests (@CustomerSelfService_customers_CustomerId customerId);
+      * @CustomerSelfService_customers_AddressDto changeAddress (@CustomerSelfService_customers_CustomerId customerId, @CustomerSelfService_customers_AddressDto requestDto);
+      * @CustomerSelfService_customers_CustomerDto getCustomer (@CustomerSelfService_customers_CustomerId customerId);
+      * List<@CustomerSelfService_customers_InsuranceQuoteRequestDto> getInsuranceQuoteRequests (@CustomerSelfService_customers_CustomerId customerId);
     }
     // This value object has been derived from the class com.lakesidemutual.customerselfservice.interfaces.dtos.customer.AddressDto.
     ValueObject CustomerSelfService_customers_AddressDto {
@@ -362,7 +359,7 @@ BoundedContext CustomerCore {
   Aggregate cities {
     Entity cities_RootEntity {
       aggregateRoot
-      def @CitiesResponseDto getCitiesForPostalCode;
+      * @CitiesResponseDto getCitiesForPostalCode;
     }
     // This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.city.CitiesResponseDto.
     ValueObject CitiesResponseDto {
@@ -384,10 +381,10 @@ BoundedContext CustomerCore {
     }
     Entity CustomerCore_customers_RootEntity {
       aggregateRoot
-      def @CustomerResponseDto updateCustomer (@CustomerId customerId, @CustomerProfileUpdateRequestDto requestDto);
-      def @CustomersResponseDto getCustomer;
-      def @AddressDto changeAddress (@AddressDto requestDto, @CustomerId customerId);
-      def @CustomerCore_customers_PaginatedCustomerResponseDto getCustomers;
+      * @CustomerResponseDto updateCustomer (@CustomerProfileUpdateRequestDto requestDto, @CustomerId customerId);
+      * @CustomersResponseDto getCustomer;
+      * @AddressDto changeAddress (@CustomerId customerId, @AddressDto requestDto);
+      * @CustomerCore_customers_PaginatedCustomerResponseDto getCustomers;
     }
     // This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomerProfileUpdateRequestDto.
     ValueObject CustomerProfileUpdateRequestDto {
@@ -413,7 +410,6 @@ BoundedContext CustomerCore {
       Date birthday
       String customerId
       List<Link> links
-      - List<CustomerResponseDto> customers - List<CustomerResponseDto> customers
     }
     // This value object has been derived from the class com.lakesidemutual.customercore.interfaces.dtos.customer.CustomersResponseDto.
     ValueObject CustomersResponseDto {
