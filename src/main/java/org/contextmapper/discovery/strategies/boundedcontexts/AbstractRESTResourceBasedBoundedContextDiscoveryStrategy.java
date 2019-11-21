@@ -254,7 +254,6 @@ public abstract class AbstractRESTResourceBasedBoundedContextDiscoveryStrategy e
     private Reference createReference(String name, DomainObject domainObject, String collectionType) {
         Reference reference = new Reference(domainObject, name);
         reference.setCollectionType(collectionType);
-        domainObject.addReference(reference);
         return reference;
     }
 
