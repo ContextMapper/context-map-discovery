@@ -17,9 +17,7 @@ package org.contextmapper.discovery.strategies.boundedcontexts;
 
 import org.contextmapper.discovery.strategies.helper.AnnotationScanner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -57,7 +55,8 @@ public class SpringBootBoundedContextDiscoveryStrategy extends AbstractRESTResou
 
     @Override
     protected Set<Method> findResourceMethods(Class<?> resourceType) {
-        return new AnnotationScanner().scanForAnnotatedMethods(resourceType, PutMapping.class, GetMapping.class, RequestMapping.class);
+        return new AnnotationScanner().scanForAnnotatedMethods(resourceType, RequestMapping.class, PutMapping.class,
+                GetMapping.class, PostMapping.class, PatchMapping.class, DeleteMapping.class);
     }
 
 }
