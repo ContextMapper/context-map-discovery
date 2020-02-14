@@ -15,16 +15,25 @@
  */
 package org.contextmapper.discovery.strategies.helper;
 
+import org.reflections.Configuration;
 import org.reflections.Reflections;
+import org.reflections.ReflectionsException;
+import org.reflections.Store;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.Scanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.reflections.util.Utils.findLogger;
 
 /**
  * Provides methods for annotation scanning.
@@ -32,6 +41,8 @@ import java.util.Set;
  * @author Stefan Kapferer
  */
 public class AnnotationScanner {
+
+    public static Logger log = findLogger(AnnotationScanner.class);
 
     /**
      * Finds all types within a package annotated with a given annotation.
@@ -41,7 +52,7 @@ public class AnnotationScanner {
      * @return the set of types within the given package which are annotated with the given annotation
      */
     public Set<Class<?>> scanForAnnotatedType(String packageName, Class<? extends Annotation> annotation) {
-        Reflections reflections = new Reflections(packageName, new SubTypesScanner(), new TypeAnnotationsScanner());
+        Reflections reflections = new Reflections(packageName, new SubTypesScanner(false), new TypeAnnotationsScanner());
         return reflections.getTypesAnnotatedWith(annotation);
     }
 
@@ -53,10 +64,21 @@ public class AnnotationScanner {
      * @return the set of methods within the given type which are annotated with the given annotation
      */
     public Set<Method> scanForAnnotatedMethods(Class<?> type, Class<? extends Annotation>... annotations) {
-        Reflections reflections = new Reflections(type.getName(), new MethodAnnotationsScanner());
         Set<Method> methods = new HashSet<>();
-        for (Class<? extends Annotation> annotation : annotations) {
-            methods.addAll(reflections.getMethodsAnnotatedWith(annotation));
+        try {
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper.forClass(type))
+                    .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner())
+                    .filterInputsBy(new FilterBuilder().includePackage(type))
+            );
+            for (Class<? extends Annotation> annotation : annotations) {
+                methods.addAll(reflections.getMethodsAnnotatedWith(annotation));
+            }
+        } catch (ReflectionsException e) {
+            // unfortunately the reflections library in version 0.9.12 (needed for Java 11) throws an exception if nothing is found
+            // just log errors here for now; should no longer be needed to catch this when the following issue is fixed:
+            // https://github.com/ronmamo/reflections/issues/273
+            log.error(e.getMessage());
         }
         return methods;
     }
