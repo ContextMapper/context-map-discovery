@@ -82,7 +82,7 @@ public class ContextMapToCMLConverterTest {
         assertEquals(1, bc.getAggregates().size());
         Aggregate aggregate = bc.getAggregates().get(0);
         assertEquals("customers", aggregate.getName());
-        assertEquals("// This Aggregate has been created on the basis of the RESTful HTTP controller test.application.spring.boot.interfaces.CustomerInformationHolder.", aggregate.getComment());
+        assertEquals("/* This Aggregate has been created on the basis of the RESTful HTTP controller test.application.spring.boot.interfaces.CustomerInformationHolder. */", aggregate.getComment());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ContextMapToCMLConverterTest {
         assertNotNull(addressValueObject);
         assertNotNull(resourceValueObjects.stream().filter(o -> o.getName().equals("CustomerId")).findFirst().get());
         assertNotNull(resourceValueObjects.stream().filter(o -> o.getName().equals("Customer")).findFirst().get());
-        assertEquals("// This value object has been derived from the class test.application.spring.boot.model.Address.", addressValueObject.getComment());
+        assertEquals("/* This value object has been derived from the class test.application.spring.boot.model.Address. */", addressValueObject.getComment());
     }
 
     @Test
@@ -151,30 +151,36 @@ public class ContextMapToCMLConverterTest {
         Aggregate aggregate = bc.getAggregates().get(0);
         Set<Entity> entities = aggregate.getDomainObjects().stream().filter(o -> o instanceof Entity).map(o -> (Entity) o).collect(Collectors.toSet());
         Entity rootEntity = entities.iterator().next();
-        assertEquals(3, rootEntity.getOperations().size());
+        assertEquals(4, rootEntity.getOperations().size());
         DomainObjectOperation changeAddress = rootEntity.getOperations().stream().filter(o -> o.getName().equals("changeAddress")).findFirst().get();
         DomainObjectOperation getCustomer = rootEntity.getOperations().stream().filter(o -> o.getName().equals("getCustomer")).findFirst().get();
         DomainObjectOperation getCustomers = rootEntity.getOperations().stream().filter(o -> o.getName().equals("getCustomers")).findFirst().get();
+        DomainObjectOperation deleteCustomer = rootEntity.getOperations().stream().filter(o -> o.getName().equals("deleteCustomer")).findFirst().get();
         assertNotNull(changeAddress);
         assertNotNull(getCustomer);
         assertNotNull(getCustomers);
+        assertNotNull(deleteCustomer);
         assertEquals("Address", changeAddress.getReturnType().getDomainObjectType().getName());
         assertEquals("Customer", getCustomer.getReturnType().getDomainObjectType().getName());
         assertEquals("Customer", getCustomers.getReturnType().getDomainObjectType().getName());
         assertEquals("List", getCustomers.getReturnType().getCollectionType().getName());
+        assertNull(deleteCustomer.getReturnType());
         Parameter customerIdParam =  changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
         Parameter requestDtoParam =  changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg1")).findFirst().get();
         Parameter customerIdParam2 =  getCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
         Parameter customerIdsParam =  getCustomers.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
+        Parameter deleteCustomerIdParam =  deleteCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
         assertNotNull(customerIdParam);
         assertNotNull(requestDtoParam);
         assertNotNull(customerIdParam2);
         assertNotNull(customerIdsParam);
+        assertNotNull(deleteCustomerIdParam);
         assertEquals("CustomerId", customerIdParam.getParameterType().getDomainObjectType().getName());
         assertEquals("Address", requestDtoParam.getParameterType().getDomainObjectType().getName());
         assertEquals("CustomerId", customerIdParam2.getParameterType().getDomainObjectType().getName());
         assertEquals("CustomerId", customerIdsParam.getParameterType().getDomainObjectType().getName());
         assertEquals("List", customerIdsParam.getParameterType().getCollectionType().getName());
+        assertEquals("CustomerId", deleteCustomerIdParam.getParameterType().getDomainObjectType().getName());
     }
 
     @Test

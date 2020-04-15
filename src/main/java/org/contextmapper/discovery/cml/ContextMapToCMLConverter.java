@@ -69,7 +69,7 @@ public class ContextMapToCMLConverter {
         Aggregate aggregate = ContextMappingDSLFactory.eINSTANCE.createAggregate();
         aggregate.setName(inputAggregate.getName());
         if (inputAggregate.getDiscoveryComment() != null && !"".equals(inputAggregate.getDiscoveryComment()))
-            aggregate.setComment("// " + inputAggregate.getDiscoveryComment());
+            aggregate.setComment("/* " + inputAggregate.getDiscoveryComment() + " */");
         for (org.contextmapper.discovery.model.DomainObject domainObject : inputAggregate.getDomainObjects()) {
             aggregate.getDomainObjects().add(convert(domainObject));
         }
@@ -100,7 +100,7 @@ public class ContextMapToCMLConverter {
         ValueObject valueObject = TacticdslFactory.eINSTANCE.createValueObject();
         valueObject.setName(inputDomainObject.getName());
         if (inputDomainObject.getDiscoveryComment() != null && !"".equals(inputDomainObject.getDiscoveryComment()))
-            valueObject.setComment("// " + inputDomainObject.getDiscoveryComment());
+            valueObject.setComment("/* " + inputDomainObject.getDiscoveryComment() + " */");
         domainObjectLookupMap.put(inputDomainObject, valueObject);
         return valueObject;
     }
@@ -128,6 +128,9 @@ public class ContextMapToCMLConverter {
     }
 
     private ComplexType createComplexType(org.contextmapper.discovery.model.DomainObject inputDomainObject, String collectionType) {
+        if (inputDomainObject == null)
+            return null; // "void" case
+
         ComplexType complexType = TacticdslFactory.eINSTANCE.createComplexType();
         complexType.setDomainObjectType(this.domainObjectLookupMap.get(inputDomainObject));
         if (collectionType != null)
