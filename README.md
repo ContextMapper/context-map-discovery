@@ -68,7 +68,7 @@ To use this library and discover CML models as in the example above, you can add
 
 **Gradle:**
 ```gradle
-implementation 'org.contextmapper:context-map-discovery:1.2.1'
+implementation 'org.contextmapper:context-map-discovery:1.3.0'
 ```
 
 **Maven:**
@@ -76,7 +76,7 @@ implementation 'org.contextmapper:context-map-discovery:1.2.1'
 <dependency>
   <groupId>org.contextmapper</groupId>
   <artifactId>context-map-discovery</artifactId>
-  <version>1.2.1</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
