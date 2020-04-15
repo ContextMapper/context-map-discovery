@@ -32,6 +32,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.reflections.util.Utils.findLogger;
 
@@ -80,7 +81,7 @@ public class AnnotationScanner {
             // https://github.com/ronmamo/reflections/issues/273
             log.error(e.getMessage());
         }
-        return methods;
+        return methods.stream().filter(m -> m.getDeclaringClass().equals(type)).collect(Collectors.toSet());
     }
 
 }

@@ -34,11 +34,13 @@ public class ContextMapSerializerTest {
 
     private final static String SRC_GEN_FOLDER = "./src-gen";
     private final static String TEST_CML_FILE = SRC_GEN_FOLDER + "/microservice-test.cml";
+    private final static String TEST_DOMAIN_MODEL_CML_FILE = SRC_GEN_FOLDER + "/domain-model-test.cml";
 
     @BeforeEach
     void prepare() {
         File srcGen = new File(SRC_GEN_FOLDER);
         File testCMLFile = new File(TEST_CML_FILE);
+        File testDomainModelCMLFile = new File(TEST_DOMAIN_MODEL_CML_FILE);
 
         if (!srcGen.exists())
             srcGen.mkdir();
@@ -46,7 +48,11 @@ public class ContextMapSerializerTest {
         if (testCMLFile.exists())
             testCMLFile.delete();
 
+        if (testDomainModelCMLFile.exists())
+            testDomainModelCMLFile.delete();
+
         assertFalse(testCMLFile.exists());
+        assertFalse(testDomainModelCMLFile.exists());
     }
 
     @Test
@@ -68,6 +74,22 @@ public class ContextMapSerializerTest {
 
         // then
         assertTrue(new File(TEST_CML_FILE).exists());
+    }
+
+    @Test
+    public void canSaveDiscoveredBoundedContextDomainModels() throws IOException {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(
+                        new SpringBootBoundedContextDiscoveryStrategy("test.application.spring.boot"));
+
+        // when
+        ContextMap contextmap = discoverer.discoverContextMap();
+        ContextMapSerializer serializer = new ContextMapSerializer();
+        serializer.serializeContextMap(contextmap, new File(TEST_DOMAIN_MODEL_CML_FILE));
+
+        // then
+        assertTrue(new File(TEST_DOMAIN_MODEL_CML_FILE).exists());
     }
 
     @Test

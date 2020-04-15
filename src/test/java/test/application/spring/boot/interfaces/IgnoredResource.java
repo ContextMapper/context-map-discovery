@@ -15,6 +15,8 @@
  */
 package test.application.spring.boot.interfaces;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class IgnoredResource {
 
     // this resource will be ignored, since the @RequestMapping annotation contains no value
+
+    @PutMapping
+    public ResponseEntity<Object> ignoredOperation() {
+        return null;
+    }
 
 }

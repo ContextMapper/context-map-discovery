@@ -45,4 +45,10 @@ public class CustomerInformationHolder {
         return null;
     }
 
+    @DeleteMapping(value = "/{customerId}/")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable CustomerId customerId) {
+        // method will never be called; this is just for our reflection (scanning) tests;
+        return null;
+    }
+
 }
