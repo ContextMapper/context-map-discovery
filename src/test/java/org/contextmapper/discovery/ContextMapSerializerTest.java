@@ -27,7 +27,6 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Disabled
 public class ContextMapSerializerTest {
 
     private final static String SRC_GEN_FOLDER = "./src-gen";
