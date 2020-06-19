@@ -19,10 +19,7 @@ import org.contextmapper.discovery.model.ContextMap;
 import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.names.SeparatorToCamelCaseBoundedContextNameMappingStrategy;
 import org.contextmapper.discovery.strategies.relationships.DockerComposeRelationshipDiscoveryStrategy;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +27,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 public class ContextMapSerializerTest {
 
     private final static String SRC_GEN_FOLDER = "./src-gen";

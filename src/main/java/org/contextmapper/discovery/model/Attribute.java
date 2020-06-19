@@ -19,8 +19,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Represents an entity attribute (primitive types).
- * For references to other non-primitive types use {@link Reference}.
+ * Represents an entity attribute.
  *
  * @author Stefan Kapferer
  */
@@ -28,10 +27,9 @@ public class Attribute {
 
     private DomainObject parent;
     private String name;
-    private String type;
-    private String collectionType;
+    private Type type;
 
-    public Attribute(String type, String name) {
+    public Attribute(Type type, String name) {
         this.type = type;
         this.name = name;
     }
@@ -50,7 +48,7 @@ public class Attribute {
      *
      * @return the type of the attribute
      */
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
@@ -72,24 +70,6 @@ public class Attribute {
         this.parent = parent;
     }
 
-    /**
-     * Sets the collection type of the reference attribute.
-     *
-     * @param collectionType the collection type of the reference attribute
-     */
-    public void setCollectionType(String collectionType) {
-        this.collectionType = collectionType;
-    }
-
-    /**
-     * Gets the collection type of the reference attribute.
-     *
-     * @return the collection type of the reference attribute
-     */
-    public String getCollectionType() {
-        return collectionType;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Attribute))
@@ -100,6 +80,7 @@ public class Attribute {
         return new EqualsBuilder()
                 .append(parent, attribute.parent)
                 .append(name, attribute.name)
+                .append(type, attribute.type)
                 .isEquals();
     }
 
@@ -108,6 +89,7 @@ public class Attribute {
         return new HashCodeBuilder()
                 .append(parent)
                 .append(name)
+                .append(type)
                 .hashCode();
     }
 }

@@ -17,10 +17,13 @@ package org.contextmapper.discovery.cml;
 
 import org.contextmapper.discovery.model.Method;
 import org.contextmapper.discovery.model.Relationship;
+import org.contextmapper.discovery.model.Type;
+import org.contextmapper.discovery.model.TypeKind;
 import org.contextmapper.dsl.contextMappingDSL.*;
 import org.contextmapper.tactic.dsl.tacticdsl.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.contextmapper.discovery.model.DomainObjectType.ENTITY;
 
@@ -110,7 +113,7 @@ public class ContextMapToCMLConverter {
         for (Method inputMethod : inputDomainObject.getMethods()) {
             DomainObjectOperation operation = TacticdslFactory.eINSTANCE.createDomainObjectOperation();
             operation.setName(inputMethod.getName());
-            operation.setReturnType(createComplexType(inputMethod.getReturnType(), inputMethod.getReturnCollectionType()));
+            operation.setReturnType(createComplexType(inputMethod.getReturnType()));
             operation.getParameters().addAll(createParameters(inputMethod.getParameters()));
             domainObject.getOperations().add(operation);
         }
@@ -121,20 +124,24 @@ public class ContextMapToCMLConverter {
         for (org.contextmapper.discovery.model.Parameter inputParameter : inputParameters) {
             Parameter parameter = TacticdslFactory.eINSTANCE.createParameter();
             parameter.setName(inputParameter.getName());
-            parameter.setParameterType(createComplexType(inputParameter.getType(), inputParameter.getCollectionType()));
+            parameter.setParameterType(createComplexType(inputParameter.getType()));
             parameters.add(parameter);
         }
         return parameters;
     }
 
-    private ComplexType createComplexType(org.contextmapper.discovery.model.DomainObject inputDomainObject, String collectionType) {
-        if (inputDomainObject == null)
+    private ComplexType createComplexType(Type type) {
+        if (type == null)
             return null; // "void" case
 
         ComplexType complexType = TacticdslFactory.eINSTANCE.createComplexType();
-        complexType.setDomainObjectType(this.domainObjectLookupMap.get(inputDomainObject));
-        if (collectionType != null)
-            complexType.setCollectionType(CollectionType.get(collectionType));
+        if (type.isDomainObjectType())
+            complexType.setDomainObjectType(this.domainObjectLookupMap.get(type.getDomainObjectType()));
+        else
+            complexType.setType(type.getPrimitiveType());
+
+        if (type.isCollectionType())
+            complexType.setCollectionType(CollectionType.get(type.getCollectionType()));
         return complexType;
     }
 
@@ -159,18 +166,22 @@ public class ContextMapToCMLConverter {
     }
 
     private void updateDomainObject(org.contextmapper.discovery.model.DomainObject inputDomainObject, DomainObject domainObject) {
-        for (org.contextmapper.discovery.model.Attribute inputAttribute : inputDomainObject.getAttributes()) {
+        Set<org.contextmapper.discovery.model.Attribute> primitiveAttributes = inputDomainObject.getAttributes().stream().filter(a -> a.getType().getKind() == TypeKind.PRIMITIVE).collect(Collectors.toSet());
+        Set<org.contextmapper.discovery.model.Attribute> domainObjectAttributes = inputDomainObject.getAttributes().stream().filter(a -> a.getType().getKind() == TypeKind.DOMAIN_OBJECT).collect(Collectors.toSet());
+        for (org.contextmapper.discovery.model.Attribute inputAttribute : primitiveAttributes) {
             Attribute attribute = TacticdslFactory.eINSTANCE.createAttribute();
             attribute.setName(inputAttribute.getName());
-            attribute.setType(inputAttribute.getType());
-            attribute.setCollectionType(CollectionType.get(inputAttribute.getCollectionType()));
+            attribute.setType(inputAttribute.getType().getPrimitiveType());
+            if (inputAttribute.getType().isCollectionType())
+                attribute.setCollectionType(CollectionType.get(inputAttribute.getType().getCollectionType()));
             domainObject.getAttributes().add(attribute);
         }
-        for (org.contextmapper.discovery.model.Reference inputReference : inputDomainObject.getReferences()) {
+        for (org.contextmapper.discovery.model.Attribute inputAttribute : domainObjectAttributes) {
             Reference reference = TacticdslFactory.eINSTANCE.createReference();
-            reference.setName(inputReference.getName());
-            reference.setDomainObjectType(this.domainObjectLookupMap.get(inputReference.getType()));
-            reference.setCollectionType(CollectionType.get(inputReference.getCollectionType()));
+            reference.setName(inputAttribute.getName());
+            reference.setDomainObjectType(this.domainObjectLookupMap.get(inputAttribute.getType().getDomainObjectType()));
+            if (inputAttribute.getType().isCollectionType())
+                reference.setCollectionType(CollectionType.get(inputAttribute.getType().getCollectionType()));
             domainObject.getReferences().add(reference);
         }
     }

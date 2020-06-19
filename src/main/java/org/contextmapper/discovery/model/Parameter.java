@@ -23,10 +23,9 @@ package org.contextmapper.discovery.model;
 public class Parameter {
 
     private String name;
-    private DomainObject type;
-    private String collectionType;
+    private Type type;
 
-    public Parameter(String name, DomainObject type) {
+    public Parameter(String name, Type type) {
         this.name = name;
         this.type = type;
     }
@@ -45,25 +44,8 @@ public class Parameter {
      *
      * @return the type of the parameter
      */
-    public DomainObject getType() {
+    public Type getType() {
         return type;
     }
 
-    /**
-     * Sets the collection type of the parameter
-     *
-     * @param collectionType the collection type of the parameter
-     */
-    public void setCollectionType(String collectionType) {
-        this.collectionType = collectionType;
-    }
-
-    /**
-     * Gets the collection type of the parameter.
-     *
-     * @return the collection type of the parameter
-     */
-    public String getCollectionType() {
-        return collectionType;
-    }
 }

@@ -31,7 +31,6 @@ public class DomainObject {
     private String name;
     private String originalType;
     private Set<Attribute> attributes;
-    private Set<Reference> references;
     private Set<Method> methods;
     private String discoveryComment;
     private DomainObjectType type;
@@ -46,7 +45,6 @@ public class DomainObject {
         this.type = type;
         this.name = name;
         this.attributes = new HashSet<>();
-        this.references = new HashSet<>();
         this.methods = new HashSet<>();
     }
 
@@ -108,25 +106,6 @@ public class DomainObject {
      */
     public Set<Attribute> getAttributes() {
         return new HashSet<>(attributes);
-    }
-
-    /**
-     * Adds a new reference to the domain object.
-     *
-     * @param reference the reference to be added to the domain object
-     */
-    public void addReference(Reference reference) {
-        reference.setParent(this);
-        this.references.add(reference);
-    }
-
-    /**
-     * Gets the set of references of the domain object.
-     *
-     * @return the set of reference of the domain object
-     */
-    public Set<Reference> getReferences() {
-        return new HashSet<>(references);
     }
 
     /**

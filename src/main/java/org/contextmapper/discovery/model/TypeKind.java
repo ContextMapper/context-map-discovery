@@ -15,23 +15,13 @@
  */
 package org.contextmapper.discovery.model;
 
-import org.junit.jupiter.api.Test;
+/**
+ * Used to classify the kind of a type. Can either by a primitive type or a domain object type.
+ *
+ * @author Stefan Kapferer
+ */
+public enum TypeKind {
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class ParameterTest {
-
-    @Test
-    public void canCreateParameter() {
-        // given
-        Type type = new Type(new DomainObject(DomainObjectType.VALUE_OBJECT, "TestType"));
-
-        // when
-        Parameter parameter = new Parameter("testParameter", type);
-
-        // then
-        assertEquals("testParameter", parameter.getName());
-        assertEquals("TestType", parameter.getType().getName());
-    }
+    PRIMITIVE, DOMAIN_OBJECT
 
 }

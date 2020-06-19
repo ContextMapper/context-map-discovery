@@ -8,7 +8,7 @@ plugins {
 
 group 'org.contextmapper'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -26,6 +26,7 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIOVersion}"
     implementation "org.yaml:snakeyaml:${snakeYMLVersion}"
     implementation "org.contextmapper:context-mapper-dsl:${cmlVersion}"
+    implementation "io.swagger.parser.v3:swagger-parser:${swaggerParserVersion}"
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion

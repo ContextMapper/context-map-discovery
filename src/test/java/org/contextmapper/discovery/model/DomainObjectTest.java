@@ -43,7 +43,7 @@ public class DomainObjectTest {
         DomainObject domainObject = new DomainObject(ENTITY, "Name", "Type");
 
         // when
-        Attribute attribute = new Attribute("String", "attr1");
+        Attribute attribute = new Attribute(new Type("String"), "attr1");
         domainObject.addAttribute(attribute);
 
         // then
@@ -51,7 +51,7 @@ public class DomainObjectTest {
         Attribute attribute1 = domainObject.getAttributes().iterator().next();
         assertEquals(attribute, attribute1);
         assertEquals(domainObject, attribute1.getParent());
-        assertEquals("String", attribute1.getType());
+        assertEquals("String", attribute1.getType().getPrimitiveType());
         assertEquals("attr1", attribute1.getName());
         assertFalse(attribute1.equals(new Object()));
     }
@@ -63,15 +63,15 @@ public class DomainObjectTest {
         DomainObject referencedDomainObject = new DomainObject(ENTITY, "ReferencedType", "test.ReferencedType");
 
         // when
-        Reference reference = new Reference(referencedDomainObject, "reference");
-        domainObject.addReference(reference);
+        Attribute reference = new Attribute(new Type(referencedDomainObject), "reference");
+        domainObject.addAttribute(reference);
 
         // then
-        assertEquals(1, domainObject.getReferences().size());
-        Reference reference1 = domainObject.getReferences().iterator().next();
+        assertEquals(1, domainObject.getAttributes().size());
+        Attribute reference1 = domainObject.getAttributes().iterator().next();
         assertEquals(reference, reference1);
         assertEquals(domainObject, reference1.getParent());
-        assertEquals(referencedDomainObject, reference1.getType());
+        assertEquals(referencedDomainObject, reference1.getType().getDomainObjectType());
         assertEquals("reference", reference1.getName());
         assertFalse(reference1.equals(new Object()));
     }
