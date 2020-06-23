@@ -216,6 +216,26 @@ public class OASBoundedContextDiscoveryStrategyTest {
         assertEquals("PaperItemKey", parameter.getType().getName());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"operation-without-id-1.yml", "operation-without-id-2.yml"})
+    public void canIgnoreOperationWithoutId(String testFile) {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy("./src/test/resources/test/oas-tests/" + testFile));
+
+        // when
+        ContextMap contextMap = discoverer.discoverContextMap();
+        BoundedContext bc = contextMap.getBoundedContexts().iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        Service service = aggregate.getServices().iterator().next();
+
+        // then
+        assertNotNull(bc);
+        assertNotNull(aggregate);
+        assertNotNull(service);
+        assertEquals(1, service.getOperations().size());
+    }
+
     @Test
     public void canLogOASValidationError() {
         // given

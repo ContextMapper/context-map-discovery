@@ -67,9 +67,7 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
             currentOAS = parseResult.getOpenAPI();
             if (currentOAS == null)
                 throw new RuntimeException("Could not successfully parse OAS!");
-            var context = discoverBoundedContext(currentOAS);
-            if (context != null)
-                boundedContexts.add(context);
+            boundedContexts.add(discoverBoundedContext(currentOAS));
         }
         return boundedContexts;
     }
@@ -77,33 +75,28 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
     private BoundedContext discoverBoundedContext(OpenAPI oas) {
         var bc = new BoundedContext(oas.getInfo().getTitle());
         for (Map.Entry<String, PathItem> entry : oas.getPaths().entrySet()) {
-            var aggregate = discoverAggregate(entry.getKey(), entry.getValue());
-            if (aggregate != null)
-                bc.addAggregate(aggregate);
+            bc.addAggregate(discoverAggregate(entry.getKey(), entry.getValue()));
         }
         return bc;
     }
 
     private Aggregate discoverAggregate(String pathItemKey, PathItem pathItem) {
-        var aggregateName = pathItemKey.startsWith("/") ? pathItemKey.substring(1) : pathItemKey;
-        aggregateName = aggregateName.replace("/", "_");
+        var aggregateName = pathItemKey.substring(1).replace("/", "_"); // path key must start with '/'!
         var aggregate = new Aggregate(aggregateName);
         aggregate.setDiscoveryComment(pathItem.getSummary());
 
-        if (endpointHasOperation(pathItem)) {
-            var service = new Service(aggregateName + "Service");
-            service.setDiscoveryComment("This service contains all operations of the following endpoint: " + pathItemKey);
-            aggregate.addService(service);
+        var service = new Service(aggregateName + "Service");
+        service.setDiscoveryComment("This service contains all operations of the following endpoint: " + pathItemKey);
+        aggregate.addService(service);
 
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getGet()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getPut()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getPost()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getDelete()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getOptions()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getHead()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getPatch()));
-            addOperationToService(service, discoverOperation(aggregate, pathItem.getTrace()));
-        }
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getGet()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getPut()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getPost()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getDelete()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getOptions()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getHead()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getPatch()));
+        addOperationToService(service, discoverOperation(aggregate, pathItem.getTrace()));
 
         return aggregate;
     }
@@ -122,9 +115,7 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
         // parameters
         if (oasOperation.getParameters() != null) {
             for (io.swagger.v3.oas.models.parameters.Parameter parameter : oasOperation.getParameters()) {
-                Parameter param = discoverParameter(aggregate, parameter);
-                if (param != null)
-                    operation.addParameter(param);
+                operation.addParameter(discoverParameter(aggregate, parameter));
             }
         }
 
@@ -168,8 +159,6 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
     private Type createType4Schema(Aggregate aggregate, Schema inputSchema, String inputTypeName) {
         var schema = inputSchema;
         var typeName = inputTypeName;
-        if (schema == null)
-            return null;
         if (isRefSchema(schema)) {
             typeName = getTypeNameFromSchemaRef(schema.get$ref());
             schema = resolveSchemaByRef(schema.get$ref());
@@ -217,24 +206,6 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
         aggregate.addDomainObject(domainObject);
         domainObjectMap.get(aggregate).put(objectName, domainObject);
         return domainObject;
-    }
-
-    private boolean endpointHasOperation(PathItem pathItem) {
-        Set<Operation> operations = Sets.newHashSet();
-        addOperation2ListIfNotNull(operations, pathItem.getGet());
-        addOperation2ListIfNotNull(operations, pathItem.getPost());
-        addOperation2ListIfNotNull(operations, pathItem.getPut());
-        addOperation2ListIfNotNull(operations, pathItem.getDelete());
-        addOperation2ListIfNotNull(operations, pathItem.getHead());
-        addOperation2ListIfNotNull(operations, pathItem.getOptions());
-        addOperation2ListIfNotNull(operations, pathItem.getPatch());
-        addOperation2ListIfNotNull(operations, pathItem.getTrace());
-        return !operations.isEmpty();
-    }
-
-    private void addOperation2ListIfNotNull(Set<Operation> operations, Operation operation) {
-        if (operation != null)
-            operations.add(operation);
     }
 
     private String formatTypeName(String typeName) {
