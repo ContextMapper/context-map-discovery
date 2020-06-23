@@ -1,0 +1,37 @@
+ContextMap {
+	contains ReferenceManagementServiceAPI
+
+}
+
+BoundedContext ReferenceManagementServiceAPI {
+	/* general data-oriented endpoint */
+	Aggregate PaperArchiveFacade {
+		/* This service contains all operations of the following endpoint: /PaperArchiveFacade */
+		Service PaperArchiveFacadeService {
+			@PaperItemDTO createPaperItem (@CreatePaperItemParameter input);
+			@ConvertToMarkdownForWebsiteReturnType convertToMarkdownForWebsite (@PaperItemKey input);
+			List<@PaperItemDTO> lookupPapersFromAuthor (String Parameter1);
+		}
+		Entity PaperItemDTO {
+			String title
+			String venue
+			String authors
+			- PaperItemIdType paperItemId
+		}
+		Entity PaperItemKey {
+			String doi
+		}
+		Entity PaperItemIdType {
+			String doi
+		}
+		Entity CreatePaperItemParameter {
+			String where
+			String what
+			String who
+		}
+		Entity ConvertToMarkdownForWebsiteReturnType {
+			String anonymous1
+		}
+	}
+}
+
