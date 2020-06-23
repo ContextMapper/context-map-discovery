@@ -1,0 +1,16 @@
+openapi: 3.0.1
+info:
+  title: ReferenceManagementServiceAPI
+  version: "1.0"
+paths:
+  /ErrorTest:
+    get:
+      operationId: operation1
+      responses:
+        "200":
+          description: response message payload (success case)
+    get:
+      operationId: operation1
+      responses:
+        "200":
+          description: response message payload (success case)

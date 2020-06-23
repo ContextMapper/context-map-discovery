@@ -15,10 +15,17 @@
  */
 package org.contextmapper.discovery.strategies.boundedcontexts;
 
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.contextmapper.discovery.ContextMapDiscoverer;
 import org.contextmapper.discovery.model.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class OASBoundedContextDiscoveryStrategyTest {
 
-    private static final String SAMPLE_CONTRACT_LOCATION = "./src/test/resources/test/oas-tests/sample-contract.yml";
+    public static final String SAMPLE_CONTRACT_LOCATION = "./src/test/resources/test/oas-tests/sample-contract.yml";
 
     @Test
     public void canDiscoverContext() {
@@ -123,11 +130,12 @@ public class OASBoundedContextDiscoveryStrategyTest {
         assertFalse(parameter.getType().isCollectionType());
     }
 
-    @Test
-    public void canDiscoverObjectInParameter() {
+    @ParameterizedTest
+    @ValueSource(strings = {"sample-object-as-parameter-1.yml", "sample-object-as-parameter-2.yml"})
+    public void canDiscoverObjectInParameter(String testFile) {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
-                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy("./src/test/resources/test/oas-tests/sample-object-as-parameter.yml"));
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy("./src/test/resources/test/oas-tests/" + testFile));
 
         // when
         ContextMap contextMap = discoverer.discoverContextMap();
@@ -162,6 +170,84 @@ public class OASBoundedContextDiscoveryStrategyTest {
         Attribute subAttribute2 = referencedObject.getAttributes().stream().filter(a -> a.getName().equals("subattr2")).findFirst().get();
         assertEquals("String", subAttribute1.getType().getName());
         assertEquals("String", subAttribute2.getType().getName());
+    }
+
+    @Test
+    public void canDiscoverReturnType() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy(SAMPLE_CONTRACT_LOCATION));
+
+        // when
+        ContextMap contextMap = discoverer.discoverContextMap();
+        BoundedContext bc = contextMap.getBoundedContexts().iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        Service service = aggregate.getServices().iterator().next();
+        Method operation = service.getOperations().stream().filter(o -> o.getName().equals("lookupPapersFromAuthor")).findFirst().get();
+
+        // then
+        assertNotNull(operation);
+        assertNotNull(operation.getReturnType());
+        DomainObject returnObj = aggregate.getDomainObjects().stream().filter(o -> o.getName().equals("PaperItemDTO")).findFirst().get();
+        assertNotNull(returnObj);
+        assertEquals(returnObj, operation.getReturnType().getDomainObjectType());
+        assertEquals("List", operation.getReturnType().getCollectionType());
+    }
+
+    @Test
+    public void canConvertPayload() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy(SAMPLE_CONTRACT_LOCATION));
+
+        // when
+        ContextMap contextMap = discoverer.discoverContextMap();
+        BoundedContext bc = contextMap.getBoundedContexts().iterator().next();
+        Aggregate aggregate = bc.getAggregates().iterator().next();
+        Service service = aggregate.getServices().iterator().next();
+        Method operation = service.getOperations().stream().filter(o -> o.getName().equals("convertToMarkdownForWebsite")).findFirst().get();
+
+        // then
+        assertNotNull(operation);
+        assertEquals(1, operation.getParameters().size());
+        Parameter parameter = operation.getParameters().iterator().next();
+        assertEquals("input", parameter.getName());
+        assertTrue(parameter.getType().isDomainObjectType());
+        assertEquals("PaperItemKey", parameter.getType().getName());
+    }
+
+    @Test
+    public void canLogOASValidationError() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy("./src/test/resources/test/oas-tests/oas-with-error.yml"));
+        TestAppender testAppender = new TestAppender();
+        final Logger rootLogger = Logger.getRootLogger();
+        rootLogger.addAppender(testAppender);
+
+        // when, then
+        assertThrows(RuntimeException.class, () -> {
+            discoverer.discoverContextMap();
+        });
+        assertFalse(testAppender.events.isEmpty());
+    }
+
+    private class TestAppender extends AppenderSkeleton {
+        List<LoggingEvent> events = new ArrayList<LoggingEvent>();
+
+        @Override
+        protected void append(LoggingEvent event) {
+            events.add(event);
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public boolean requiresLayout() {
+            return false;
+        }
     }
 
 }

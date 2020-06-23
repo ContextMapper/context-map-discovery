@@ -79,6 +79,9 @@ public class ContextMapToCMLConverter {
         for (org.contextmapper.discovery.model.DomainObject domainObject : inputAggregate.getDomainObjects()) {
             convertDomainObjectMethods(domainObject);
         }
+        for (org.contextmapper.discovery.model.Service service : inputAggregate.getServices()) {
+            aggregate.getServices().add(convert(service));
+        }
         Optional<Entity> rootEntity = aggregate.getDomainObjects().stream().filter(o -> o instanceof Entity).map(o -> (Entity) o)
                 .filter(e -> e.getName().endsWith("_RootEntity")).findFirst();
         if (rootEntity.isPresent())
@@ -157,6 +160,24 @@ public class ContextMapToCMLConverter {
         if (relationship.getExposedAggregatesComment() != null && !"".equals(relationship.getExposedAggregatesComment()))
             upstreamDownstreamRelationship.setExposedAggregatesComment("// " + relationship.getExposedAggregatesComment());
         return upstreamDownstreamRelationship;
+    }
+
+    private Service convert(org.contextmapper.discovery.model.Service inputService) {
+        Service service = TacticdslFactory.eINSTANCE.createService();
+        service.setName(inputService.getName());
+        service.setComment("/* " + inputService.getDiscoveryComment() + " */");
+        convertServiceOperations(inputService, service);
+        return service;
+    }
+
+    private void convertServiceOperations(org.contextmapper.discovery.model.Service inputService, Service service) {
+        for (Method inputMethod : inputService.getOperations()) {
+            ServiceOperation operation = TacticdslFactory.eINSTANCE.createServiceOperation();
+            operation.setName(inputMethod.getName());
+            operation.setReturnType(createComplexType(inputMethod.getReturnType()));
+            operation.getParameters().addAll(createParameters(inputMethod.getParameters()));
+            service.getOperations().add(operation);
+        }
     }
 
     private void updateEntityAttributesAndReferences() {
