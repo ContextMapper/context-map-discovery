@@ -30,11 +30,13 @@ public class Aggregate {
 
     private String name;
     private Set<DomainObject> domainObjects;
+    private Set<Service> services;
     private String discoveryComment;
 
     public Aggregate(String name) {
         setName(name);
         this.domainObjects = new HashSet<>();
+        this.services = new HashSet<>();
     }
 
     /**
@@ -79,12 +81,41 @@ public class Aggregate {
     }
 
     /**
+     * Adds a service to the Aggregate.
+     *
+     * @param service the service to be added to the Aggregate
+     */
+    public void addService(Service service) {
+        this.services.add(service);
+    }
+
+    /**
+     * Adds all services in the given set to the Aggregate.
+     *
+     * @param services the set of services to be added to the Aggregate
+     */
+    public void addServices(Set<Service> services) {
+        for (Service service : services) {
+            this.addService(service);
+        }
+    }
+
+    /**
      * Gets the set of domain objects within the Aggregate.
      *
      * @return the set of domain objects which are part of the Aggregate
      */
     public Set<DomainObject> getDomainObjects() {
         return new HashSet<>(domainObjects);
+    }
+
+    /**
+     * Gets the set of services within the Aggregate.
+     *
+     * @return the set of services which are part of the Aggregate
+     */
+    public Set<Service> getServices() {
+        return new HashSet<>(services);
     }
 
     /**

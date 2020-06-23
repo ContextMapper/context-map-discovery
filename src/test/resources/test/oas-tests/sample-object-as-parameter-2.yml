@@ -1,0 +1,48 @@
+openapi: 3.0.1
+info:
+  title: ReferenceManagementServiceAPI
+  version: "1.0"
+tags:
+  - name: PaperArchiveFacade
+    description: general data-oriented endpoint
+    externalDocs:
+      description: INFORMATION_HOLDER_RESOURCE
+      url: https://microservice-api-patterns.org/patterns/responsibility/
+paths:
+  /PaperArchiveFacade:
+    summary: general data-oriented endpoint
+    description: 'MAP link: INFORMATION_HOLDER_RESOURCE available at [the MAP website](https://microservice-api-patterns.org/)'
+    get:
+      tags:
+        - PaperArchiveFacade
+      summary: read only
+      description: This operation realizes the Retrieval Operation pattern, described
+        [on the MAP website](https://microservice-api-patterns.org/patterns/responsibility/operationResponsibilities/RetrievalOperation.html).
+      operationId: lookupPapersFromAuthor
+      parameters:
+        - name: Parameter1
+          in: query
+          description: unspecified
+          required: true
+          schema:
+            $ref: '#/components/schemas/Parameter1Type'
+      responses:
+        "200":
+          description: response message payload (success case)
+
+components:
+  schemas:
+    Parameter1Type:
+      type: object
+      properties:
+        attr1:
+          type: string
+        attr2:
+          type: integer
+        attr3:
+          type: object
+          properties:
+            subattr1:
+              type: string
+            subattr2:
+              type: string

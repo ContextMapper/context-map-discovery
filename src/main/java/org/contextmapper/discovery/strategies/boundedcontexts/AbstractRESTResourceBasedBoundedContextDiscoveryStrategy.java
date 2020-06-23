@@ -142,12 +142,13 @@ public abstract class AbstractRESTResourceBasedBoundedContextDiscoveryStrategy e
             if (returnType != null) {
                 DomainObject returnTypeObject = createValueObjectFromType(aggregate, returnType.domainType);
                 valueObjects.add(returnTypeObject);
-                aggRootMethod.setReturnType(returnTypeObject);
-                aggRootMethod.setReturnCollectionType(returnType.collectionType);
+                org.contextmapper.discovery.model.Type type = new org.contextmapper.discovery.model.Type(returnTypeObject);
+                type.setCollectionType(returnType.collectionType);
+                aggRootMethod.setReturnType(type);
             }
             Set<DiscoveredParameterType> parameterTypes = getMethodParameterTypes(method, packageName);
             Set<Parameter> parameterTypeObjects = createValueObjectParameters(aggregate, parameterTypes.toArray(new DiscoveredParameterType[parameterTypes.size()]));
-            valueObjects.addAll(parameterTypeObjects.stream().map(p -> p.getType()).collect(Collectors.toSet()));
+            valueObjects.addAll(parameterTypeObjects.stream().filter(p -> p.getType().isDomainObjectType()).map(p -> p.getType().getDomainObjectType()).collect(Collectors.toSet()));
             aggRootMethod.addParameters(parameterTypeObjects);
             Optional<DomainObject> aggRootEntity = aggregate.getDomainObjects().stream().filter(o -> o.getName().endsWith(AGG_ROOT_ENTITY_POSTFIX)).findFirst();
             if (aggRootEntity.isPresent())
@@ -183,8 +184,9 @@ public abstract class AbstractRESTResourceBasedBoundedContextDiscoveryStrategy e
     private Set<Parameter> createValueObjectParameters(Aggregate aggregate, DiscoveredParameterType... parameterTypes) {
         Set<Parameter> valueObjectParameters = new HashSet<>();
         for (DiscoveredParameterType parameterType : parameterTypes) {
-            Parameter parameter = new Parameter(parameterType.parameterName, createValueObjectFromType(aggregate, parameterType.type.domainType));
-            parameter.setCollectionType(parameterType.type.collectionType);
+            org.contextmapper.discovery.model.Type type = new org.contextmapper.discovery.model.Type(createValueObjectFromType(aggregate, parameterType.type.domainType));
+            type.setCollectionType(parameterType.type.collectionType);
+            Parameter parameter = new Parameter(parameterType.parameterName, type);
             valueObjectParameters.add(parameter);
         }
         return valueObjectParameters;
@@ -232,13 +234,13 @@ public abstract class AbstractRESTResourceBasedBoundedContextDiscoveryStrategy e
 
             // search in aggregate first:
             if (this.domainObjectMap.get(domainObject.getParent()).containsKey(fieldType)) {
-                domainObject.addReference(createReference(field.getName(), this.domainObjectMap.get(domainObject.getParent()).get(fieldType), collectionType));
+                domainObject.addAttribute(createReference(field.getName(), this.domainObjectMap.get(domainObject.getParent()).get(fieldType), collectionType));
             } else if (globallySearchedObject != null) {
-                domainObject.addReference(createReference(field.getName(), globallySearchedObject, collectionType));
+                domainObject.addAttribute(createReference(field.getName(), globallySearchedObject, collectionType));
             } else {
-                Attribute attribute = new Attribute(simpleName, field.getName());
-                attribute.setCollectionType(collectionType);
-                domainObject.addAttribute(attribute);
+                org.contextmapper.discovery.model.Type simpleType = new org.contextmapper.discovery.model.Type(simpleName);
+                simpleType.setCollectionType(collectionType);
+                domainObject.addAttribute(new Attribute(simpleType, field.getName()));
             }
         }
     }
@@ -251,10 +253,10 @@ public abstract class AbstractRESTResourceBasedBoundedContextDiscoveryStrategy e
         return null;
     }
 
-    private Reference createReference(String name, DomainObject domainObject, String collectionType) {
-        Reference reference = new Reference(domainObject, name);
-        reference.setCollectionType(collectionType);
-        return reference;
+    private Attribute createReference(String name, DomainObject domainObject, String collectionType) {
+        org.contextmapper.discovery.model.Type type = new org.contextmapper.discovery.model.Type(domainObject);
+        type.setCollectionType(collectionType);
+        return new Attribute(type, name);
     }
 
     private Class<?> getType(Field field) {

@@ -18,6 +18,9 @@ package org.contextmapper.discovery.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AggregateTest {
@@ -59,6 +62,21 @@ public class AggregateTest {
         // then
         assertEquals(1, aggregate.getDomainObjects().size());
         assertEquals(new DomainObject(DomainObjectType.ENTITY, "Entity", "test.Entity"), aggregate.getDomainObjects().iterator().next());
+    }
+
+    @Test
+    public void canAddServices() {
+        // given
+        Aggregate aggregate = new Aggregate("TestAggregate");
+
+        // when
+        Set<Service> services = new HashSet<>();
+        services.add(new Service("TestService1"));
+        services.add(new Service("TestService2"));
+        aggregate.addServices(services);
+
+        // then
+        assertEquals(2, aggregate.getServices().size());
     }
 
     @Test

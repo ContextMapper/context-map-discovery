@@ -135,12 +135,14 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         assertEquals("Address", changeAddress.getReturnType().getName());
         assertEquals("Customer", getCustomer.getReturnType().getName());
         assertEquals("Customer", getCustomers.getReturnType().getName());
-        assertEquals("List", getCustomers.getReturnCollectionType());
+        assertEquals("List", getCustomers.getReturnType().getCollectionType());
         assertNull(deleteCustomer.getReturnType());
         Set<String> changeAddressParameterTypes = changeAddress.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
         Set<String> getCustomerParameterTypes = getCustomer.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
         Set<String> getCustomersParameterTypes = getCustomer.getParameters().stream().map(p -> p.getType().getName()).collect(Collectors.toSet());
-        Set<String> getCustomersParameterCollectionTypes = getCustomers.getParameters().stream().map(p -> p.getCollectionType()).collect(Collectors.toSet());
+        Set<String> getCustomersParameterCollectionTypes = getCustomers.getParameters().stream()
+                .filter(p -> p.getType().isCollectionType())
+                .map(p -> p.getType().getCollectionType()).collect(Collectors.toSet());
         assertTrue(changeAddressParameterTypes.contains("CustomerId"));
         assertTrue(changeAddressParameterTypes.contains("Address"));
         assertTrue(getCustomerParameterTypes.contains("CustomerId"));
@@ -168,11 +170,11 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         Attribute streetAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("street")).findFirst().get();
         assertNotNull(streetAttribute);
         assertEquals("street", streetAttribute.getName());
-        assertEquals("String", streetAttribute.getType());
+        assertEquals("String", streetAttribute.getType().getName());
         Attribute plzAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("plz")).findFirst().get();
         assertNotNull(plzAttribute);
         assertEquals("plz", plzAttribute.getName());
-        assertEquals("int", plzAttribute.getType());
+        assertEquals("int", plzAttribute.getType().getName());
     }
 
     @Test
@@ -193,9 +195,9 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         DomainObject customerIdDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("CustomerId")).findFirst().get();
         assertNotNull(customerDomainObject);
         assertNotNull(customerIdDomainObject);
-        Set<Reference> singleReferences = customerDomainObject.getReferences().stream().filter(r -> r.getCollectionType() == null || "".equals(r.getCollectionType())).collect(Collectors.toSet());
+        Set<Attribute> singleReferences = customerDomainObject.getAttributes().stream().filter(a -> a.getType().isDomainObjectType()).filter(a -> !a.getType().isCollectionType()).collect(Collectors.toSet());
         assertEquals(1, singleReferences.size());
-        assertEquals(customerIdDomainObject, singleReferences.iterator().next().getType());
+        assertEquals(customerIdDomainObject, singleReferences.iterator().next().getType().getDomainObjectType());
     }
 
     @Test
@@ -214,11 +216,11 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         Aggregate aggregate = bc.getAggregates().iterator().next();
         DomainObject customerDomainObject = aggregate.getDomainObjects().stream().filter(e -> e.getName().equals("Customer")).findFirst().get();
         assertNotNull(customerDomainObject);
-        assertEquals(4, customerDomainObject.getReferences().size());
-        Set<Reference> collectionReferences = customerDomainObject.getReferences().stream().filter(r -> r.getCollectionType() != null).collect(Collectors.toSet());
-        assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("List")).findFirst().get().getType().getName());
-        assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("Set")).findFirst().get().getType().getName());
-        assertEquals("Address", collectionReferences.stream().filter(r -> r.getCollectionType().equals("Collection")).findFirst().get().getType().getName());
+        assertEquals(4, customerDomainObject.getAttributes().size());
+        Set<Attribute> collectionReferences = customerDomainObject.getAttributes().stream().filter(a -> a.getType().isCollectionType()).collect(Collectors.toSet());
+        assertEquals("Address", collectionReferences.stream().filter(r -> r.getType().getCollectionType().equals("List")).findFirst().get().getType().getName());
+        assertEquals("Address", collectionReferences.stream().filter(r -> r.getType().getCollectionType().equals("Set")).findFirst().get().getType().getName());
+        assertEquals("Address", collectionReferences.stream().filter(r -> r.getType().getCollectionType().equals("Collection")).findFirst().get().getType().getName());
     }
 
     @Test
@@ -239,8 +241,8 @@ public class SpringBootBoundedContextDiscoveryStrategyTest {
         assertNotNull(addressDomainObject);
         Attribute arrayAttribute = addressDomainObject.getAttributes().stream().filter(a -> a.getName().equals("arrayTest")).findFirst().get();
         assertNotNull(arrayAttribute);
-        assertEquals("String", arrayAttribute.getType());
-        assertEquals("List", arrayAttribute.getCollectionType());
+        assertEquals("String", arrayAttribute.getType().getName());
+        assertEquals("List", arrayAttribute.getType().getCollectionType());
     }
 
     @Test

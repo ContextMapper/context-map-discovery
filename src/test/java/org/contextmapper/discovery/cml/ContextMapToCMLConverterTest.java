@@ -17,14 +17,13 @@ package org.contextmapper.discovery.cml;
 
 import org.contextmapper.discovery.ContextMapDiscoverer;
 import org.contextmapper.discovery.model.DomainObject;
+import org.contextmapper.discovery.strategies.boundedcontexts.OASBoundedContextDiscoveryStrategy;
+import org.contextmapper.discovery.strategies.boundedcontexts.OASBoundedContextDiscoveryStrategyTest;
 import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.names.SeparatorToCamelCaseBoundedContextNameMappingStrategy;
 import org.contextmapper.discovery.strategies.relationships.DockerComposeRelationshipDiscoveryStrategy;
 import org.contextmapper.dsl.contextMappingDSL.*;
-import org.contextmapper.tactic.dsl.tacticdsl.DomainObjectOperation;
-import org.contextmapper.tactic.dsl.tacticdsl.Entity;
-import org.contextmapper.tactic.dsl.tacticdsl.Parameter;
-import org.contextmapper.tactic.dsl.tacticdsl.ValueObject;
+import org.contextmapper.tactic.dsl.tacticdsl.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -165,11 +164,11 @@ public class ContextMapToCMLConverterTest {
         assertEquals("Customer", getCustomers.getReturnType().getDomainObjectType().getName());
         assertEquals("List", getCustomers.getReturnType().getCollectionType().getName());
         assertNull(deleteCustomer.getReturnType());
-        Parameter customerIdParam =  changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
-        Parameter requestDtoParam =  changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg1")).findFirst().get();
-        Parameter customerIdParam2 =  getCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
-        Parameter customerIdsParam =  getCustomers.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
-        Parameter deleteCustomerIdParam =  deleteCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
+        Parameter customerIdParam = changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
+        Parameter requestDtoParam = changeAddress.getParameters().stream().filter(p -> p.getName().equals("arg1")).findFirst().get();
+        Parameter customerIdParam2 = getCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
+        Parameter customerIdsParam = getCustomers.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
+        Parameter deleteCustomerIdParam = deleteCustomer.getParameters().stream().filter(p -> p.getName().equals("arg0")).findFirst().get();
         assertNotNull(customerIdParam);
         assertNotNull(requestDtoParam);
         assertNotNull(customerIdParam2);
@@ -228,6 +227,26 @@ public class ContextMapToCMLConverterTest {
         assertEquals(4, customerValueObject.getReferences().size());
         assertEquals("CustomerId", customerValueObject.getReferences().stream().filter(r -> r.getName().equals("id")).findFirst().get()
                 .getDomainObjectType().getName());
+    }
+
+    @Test
+    public void canConvertServices() {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy(OASBoundedContextDiscoveryStrategyTest.SAMPLE_CONTRACT_LOCATION));
+        org.contextmapper.discovery.model.ContextMap contextMap = discoverer.discoverContextMap();
+
+        // when
+        ContextMappingModel model = new ContextMapToCMLConverter().convert(contextMap);
+
+        // then
+        assertEquals(1, model.getBoundedContexts().size());
+        BoundedContext bc = model.getBoundedContexts().get(0);
+        assertEquals(1, bc.getAggregates().size());
+        Aggregate aggregate = bc.getAggregates().get(0);
+        assertEquals(1, aggregate.getServices().size());
+        Service service = aggregate.getServices().get(0);
+        assertEquals(3, service.getOperations().size());
     }
 
 }

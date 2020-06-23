@@ -36,7 +36,7 @@ public class MethodTest {
         Method method = new Method("testMethod");
 
         // then
-        DomainObject returnType = new DomainObject(DomainObjectType.VALUE_OBJECT, "ReturnType");
+        Type returnType = new Type(new DomainObject(DomainObjectType.VALUE_OBJECT, "ReturnType"));
         method.setReturnType(returnType);
 
         // then
@@ -49,7 +49,7 @@ public class MethodTest {
         Method method = new Method("TestMethod");
 
         // when
-        DomainObject parameterType = new DomainObject(DomainObjectType.VALUE_OBJECT, "ParameterType");
+        Type parameterType = new Type(new DomainObject(DomainObjectType.VALUE_OBJECT, "ParameterType"));
         Parameter parameter = new Parameter("testParam", parameterType);
         method.addParameter(parameter);
 

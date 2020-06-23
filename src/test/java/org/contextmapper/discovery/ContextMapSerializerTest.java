@@ -16,17 +16,16 @@
 package org.contextmapper.discovery;
 
 import org.contextmapper.discovery.model.ContextMap;
+import org.contextmapper.discovery.strategies.boundedcontexts.OASBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.boundedcontexts.SpringBootBoundedContextDiscoveryStrategy;
 import org.contextmapper.discovery.strategies.names.SeparatorToCamelCaseBoundedContextNameMappingStrategy;
 import org.contextmapper.discovery.strategies.relationships.DockerComposeRelationshipDiscoveryStrategy;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.contextmapper.discovery.strategies.boundedcontexts.OASBoundedContextDiscoveryStrategyTest.SAMPLE_CONTRACT_LOCATION;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,12 +34,14 @@ public class ContextMapSerializerTest {
     private final static String SRC_GEN_FOLDER = "./src-gen";
     private final static String TEST_CML_FILE = SRC_GEN_FOLDER + "/microservice-test.cml";
     private final static String TEST_DOMAIN_MODEL_CML_FILE = SRC_GEN_FOLDER + "/domain-model-test.cml";
+    private final static String TEST_OAS_CML_FILE = SRC_GEN_FOLDER + "/domain-model-test.cml";
 
     @BeforeEach
     void prepare() {
         File srcGen = new File(SRC_GEN_FOLDER);
         File testCMLFile = new File(TEST_CML_FILE);
         File testDomainModelCMLFile = new File(TEST_DOMAIN_MODEL_CML_FILE);
+        File oasCMLFile = new File(TEST_OAS_CML_FILE);
 
         if (!srcGen.exists())
             srcGen.mkdir();
@@ -51,8 +52,12 @@ public class ContextMapSerializerTest {
         if (testDomainModelCMLFile.exists())
             testDomainModelCMLFile.delete();
 
+        if (oasCMLFile.exists())
+            oasCMLFile.delete();
+
         assertFalse(testCMLFile.exists());
         assertFalse(testDomainModelCMLFile.exists());
+        assertFalse(oasCMLFile.exists());
     }
 
     @Test
@@ -90,6 +95,21 @@ public class ContextMapSerializerTest {
 
         // then
         assertTrue(new File(TEST_DOMAIN_MODEL_CML_FILE).exists());
+    }
+
+    @Test
+    public void canSerializeDiscoveredBoundedContextFromOAS() throws IOException {
+        // given
+        ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
+                .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy(SAMPLE_CONTRACT_LOCATION));
+
+        // when
+        ContextMap contextmap = discoverer.discoverContextMap();
+        ContextMapSerializer serializer = new ContextMapSerializer();
+        serializer.serializeContextMap(contextmap, new File(TEST_OAS_CML_FILE));
+
+        // then
+        assertTrue(new File(TEST_OAS_CML_FILE).exists());
     }
 
     @Test

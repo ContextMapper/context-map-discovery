@@ -30,8 +30,7 @@ public class Method {
 
     private DomainObject parent;
     private String name;
-    private DomainObject returnType;
-    private String returnCollectionType;
+    private Type returnType;
     private Set<Parameter> parameters;
 
     public Method(String name) {
@@ -53,7 +52,7 @@ public class Method {
      *
      * @param returnType the return type of the method
      */
-    public void setReturnType(DomainObject returnType) {
+    public void setReturnType(Type returnType) {
         this.returnType = returnType;
     }
 
@@ -62,26 +61,8 @@ public class Method {
      *
      * @return the return type of the method
      */
-    public DomainObject getReturnType() {
+    public Type getReturnType() {
         return returnType;
-    }
-
-    /**
-     * Sets the return collection type of the method.
-     *
-     * @param returnCollectionType the return collection type of the method
-     */
-    public void setReturnCollectionType(String returnCollectionType) {
-        this.returnCollectionType = returnCollectionType;
-    }
-
-    /**
-     * Gets the return collection type of the method.
-     *
-     * @return the return collection type of the method
-     */
-    public String getReturnCollectionType() {
-        return returnCollectionType;
     }
 
     /**
