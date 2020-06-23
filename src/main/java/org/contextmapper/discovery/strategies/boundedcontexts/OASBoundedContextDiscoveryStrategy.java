@@ -209,8 +209,6 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
     }
 
     private String formatTypeName(String typeName) {
-        if (typeName == null || "".equals(typeName))
-            return "UnknownType";
         return typeName.substring(0, 1).toUpperCase() + (typeName.length() > 1 ? typeName.substring(1) : "");
     }
 
@@ -219,16 +217,10 @@ public class OASBoundedContextDiscoveryStrategy implements BoundedContextDiscove
     }
 
     private Schema resolveSchemaByRef(String ref) {
-        if (!ref.startsWith(RefType.SCHEMAS.getInternalPrefix()))
-            throw new RuntimeException("Can only handle references to schemas here.");
-        if (currentOAS.getComponents() != null && currentOAS.getComponents().getSchemas() != null)
-            return currentOAS.getComponents().getSchemas().get(getTypeNameFromSchemaRef(ref));
-        return null;
+        return currentOAS.getComponents().getSchemas().get(getTypeNameFromSchemaRef(ref));
     }
 
     private String getTypeNameFromSchemaRef(String ref) {
-        if (!ref.startsWith(RefType.SCHEMAS.getInternalPrefix()))
-            throw new RuntimeException("Given String is not a schema ref!");
         return ref.replace(RefType.SCHEMAS.getInternalPrefix(), "");
     }
 
