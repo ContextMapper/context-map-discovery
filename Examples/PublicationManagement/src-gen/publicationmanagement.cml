@@ -1,0 +1,61 @@
+ContextMap {
+	contains ReferenceManagementContextApp
+
+}
+
+BoundedContext ReferenceManagementContextApp {
+	implementationTechnology "Spring Boot"
+	/* This Aggregate has been created on the basis of the RESTful HTTP controller org.contextmapper.generated.referencemanagementcontext.web.rest.PaperCollectionResource. */
+	Aggregate ReferenceManagementContextApp_api_1 {
+		/* This value object has been derived from the class org.contextmapper.generated.referencemanagementcontext.service.dto.PaperCollectionDTO. */
+		ValueObject PaperCollectionDTO {
+			Integer paperCollectionId
+			Long id
+		}
+		Entity ReferenceManagementContextApp_api_1_RootEntity {
+			aggregateRoot
+			* @PaperCollectionDTO getPaperCollection;
+			* @PaperCollectionDTO createPaperCollection (@PaperCollectionDTO arg0);
+			* List<@PaperCollectionDTO> getAllPaperCollections;
+			* deletePaperCollection;
+			* @PaperCollectionDTO updatePaperCollection (@PaperCollectionDTO arg0);
+		}
+	}
+	/* This Aggregate has been created on the basis of the RESTful HTTP controller org.contextmapper.generated.referencemanagementcontext.web.rest.PaperItemIDResource. */
+	Aggregate api {
+		/* This value object has been derived from the class org.contextmapper.generated.referencemanagementcontext.service.dto.PaperItemIDDTO. */
+		ValueObject PaperItemIDDTO {
+			String doi
+			Long id
+		}
+		Entity api_RootEntity {
+			aggregateRoot
+			* @PaperItemIDDTO updatePaperItemID (@PaperItemIDDTO arg0);
+			* @PaperItemIDDTO createPaperItemID (@PaperItemIDDTO arg0);
+			* deletePaperItemID;
+			* List<@PaperItemIDDTO> getAllPaperItemIDS;
+			* @PaperItemIDDTO getPaperItemID;
+		}
+	}
+	/* This Aggregate has been created on the basis of the RESTful HTTP controller org.contextmapper.generated.referencemanagementcontext.web.rest.PaperItemResource. */
+	Aggregate ReferenceManagementContextApp_api {
+		Entity ReferenceManagementContextApp_api_RootEntity {
+			aggregateRoot
+			* deletePaperItem;
+			* @PaperItemDTO getPaperItem;
+			* @PaperItemDTO updatePaperItem (@PaperItemDTO arg0);
+			* List<@PaperItemDTO> getAllPaperItems;
+			* @PaperItemDTO createPaperItem (@PaperItemDTO arg0);
+		}
+		/* This value object has been derived from the class org.contextmapper.generated.referencemanagementcontext.service.dto.PaperItemDTO. */
+		ValueObject PaperItemDTO {
+			String title
+			String venue
+			Long id
+			Long paperItemIdId
+			Long paperCollectionId
+			String authors
+		}
+	}
+}
+

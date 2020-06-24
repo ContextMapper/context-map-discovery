@@ -21,6 +21,9 @@ eureka:
     instanceId: ReferenceManagementContext:${spring.application.instance-id:${random.value}}
 
 spring:
+  profiles:
+  # Uncomment the following line to enable tests against production database type rather than H2, using Testcontainers
+  #active: testcontainers
   application:
     name: ReferenceManagementContext
   datasource:
@@ -59,9 +62,6 @@ spring:
     allow-bean-definition-overriding: true
   messages:
     basename: i18n/messages
-  mvc:
-    favicon:
-      enabled: false
   task:
     execution:
       thread-name-prefix: reference-management-context-task-
@@ -91,7 +91,7 @@ jhipster:
     name: 'referenceManagementContextApp'
   logging:
     # To test json console appender
-    use-json-format: true # By default, logs are in Json format
+    use-json-format: false
     logstash:
       enabled: false
       host: localhost
@@ -101,7 +101,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: ZWEwNmM0MTg3MTYzNTcyMzgyNzI0ZmZkM2U0N2VmYWYwNGVkOTQyYjNkOTE1ZDA4NGQ4ZjVhYWE5YzUzZjY0NGQxYTQ2OTkxMGMyYmYzMDBjYTRjOGFjNTg1MmUzM2ExYjkyZmYwNjNlMGUxNDQwMjIyMDM0Mjc2MjljMTgxNDY=
+        base64-secret: Zjg1OWU5NmFjOGFmNWZkYTA2OGVkNGU2ZmUyMjRlZjU3M2QyZmFjYjhkMmM0Y2MzYjlmMTAwNTk4MjYxYWUzYWY2MmJiMzBkYThjZmQwMzdmOGRiZWY0MTdhNWY4NjA4NGI2N2IyMWNmNTkxNzUzYmRiNWZlOTYzYmIzN2E3M2Q=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
   metrics:

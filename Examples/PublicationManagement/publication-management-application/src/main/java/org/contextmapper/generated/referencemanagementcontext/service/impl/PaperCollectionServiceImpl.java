@@ -62,6 +62,7 @@ public class PaperCollectionServiceImpl implements PaperCollectionService {
             .collect(Collectors.toCollection(LinkedList::new));
     }
 
+
     /**
      * Get one paperCollection by id.
      *

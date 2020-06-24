@@ -1,7 +1,6 @@
 package org.contextmapper.generated.referencemanagementcontext.service.dto;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * A DTO for the {@link org.contextmapper.generated.referencemanagementcontext.domain.PaperItemID} entity.
@@ -34,22 +33,19 @@ public class PaperItemIDDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof PaperItemIDDTO)) {
             return false;
         }
 
-        PaperItemIDDTO paperItemIDDTO = (PaperItemIDDTO) o;
-        if (paperItemIDDTO.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), paperItemIDDTO.getId());
+        return id != null && id.equals(((PaperItemIDDTO) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
+    // prettier-ignore
     @Override
     public String toString() {
         return "PaperItemIDDTO{" +

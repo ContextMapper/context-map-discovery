@@ -55,16 +55,6 @@ spring:
       enabled: false
   jpa:
     show-sql: true
-    properties:
-      hibernate.id.new_generator_mappings: true
-      hibernate.connection.provider_disables_autocommit: true
-      hibernate.cache.use_second_level_cache: true
-      hibernate.cache.use_query_cache: false
-      hibernate.generate_statistics: false
-      hibernate.cache.region.factory_class: com.hazelcast.hibernate.HazelcastCacheRegionFactory
-      hibernate.cache.hazelcast.instance_name: ReferenceManagementContext
-      hibernate.cache.use_minimal_puts: true
-      hibernate.cache.hazelcast.use_lite_member: true
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
@@ -118,7 +108,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: ZWEwNmM0MTg3MTYzNTcyMzgyNzI0ZmZkM2U0N2VmYWYwNGVkOTQyYjNkOTE1ZDA4NGQ4ZjVhYWE5YzUzZjY0NGQxYTQ2OTkxMGMyYmYzMDBjYTRjOGFjNTg1MmUzM2ExYjkyZmYwNjNlMGUxNDQwMjIyMDM0Mjc2MjljMTgxNDY=
+        base64-secret: Zjg1OWU5NmFjOGFmNWZkYTA2OGVkNGU2ZmUyMjRlZjU3M2QyZmFjYjhkMmM0Y2MzYjlmMTAwNTk4MjYxYWUzYWY2MmJiMzBkYThjZmQwMzdmOGRiZWY0MTdhNWY4NjA4NGI2N2IyMWNmNTkxNzUzYmRiNWZlOTYzYmIzN2E3M2Q=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

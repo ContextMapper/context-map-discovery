@@ -25,6 +25,7 @@ public interface PaperItemService {
      */
     List<PaperItemDTO> findAll();
 
+
     /**
      * Get the "id" paperItem.
      *

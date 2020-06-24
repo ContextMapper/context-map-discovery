@@ -2,10 +2,10 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
 
     <property name="now" value="now()" dbms="h2"/>
-    <property name="now" value="now()" dbms="mysql"/>
+    <property name="now" value="now()" dbms="mysql, mariadb"/>
 
     <property name="floatType" value="float4" dbms="postgresql, h2"/>
     <property name="floatType" value="float" dbms="mysql, oracle, mssql, mariadb"/>
@@ -14,10 +14,11 @@
     <property name="uuidType" value="varchar(36)" dbms="h2, mysql, mariadb"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20200617122900_added_entity_PaperItem.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20200617123000_added_entity_PaperCollection.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20200617123100_added_entity_PaperItemID.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20200624062801_added_entity_PaperItem.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20200624062901_added_entity_PaperCollection.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20200624063001_added_entity_PaperItemID.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20200617122900_added_entity_constraints_PaperItem.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20200624062801_added_entity_constraints_PaperItem.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
+    <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

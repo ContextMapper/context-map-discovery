@@ -1,0 +1,46 @@
+{
+  "name": "PaperItem",
+  "fields": [
+    {
+      "fieldName": "title",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "authors",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "venue",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "paperItemID",
+      "otherEntityRelationshipName": "paperItem",
+      "relationshipName": "paperItemId",
+      "otherEntityField": "id",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "paperCollection",
+      "otherEntityRelationshipName": "paperItemList",
+      "relationshipName": "paperCollection",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20200624062801",
+  "entityTableName": "paper_item",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": ["ReferenceManagementContext", "gateway"],
+  "microserviceName": "ReferenceManagementContext"
+}

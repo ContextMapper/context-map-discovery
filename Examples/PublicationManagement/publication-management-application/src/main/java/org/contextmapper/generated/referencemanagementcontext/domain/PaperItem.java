@@ -7,14 +7,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * A PaperItem.
  */
 @Entity
 @Table(name = "paper_item")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PaperItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,10 +36,10 @@ public class PaperItem implements Serializable {
     private PaperItemID paperItemId;
 
     @ManyToOne
-    @JsonIgnoreProperties("paperItemLists")
+    @JsonIgnoreProperties(value = "paperItemLists", allowSetters = true)
     private PaperCollection paperCollection;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
@@ -113,7 +112,7 @@ public class PaperItem implements Serializable {
     public void setPaperCollection(PaperCollection paperCollection) {
         this.paperCollection = paperCollection;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -131,6 +130,7 @@ public class PaperItem implements Serializable {
         return 31;
     }
 
+    // prettier-ignore
     @Override
     public String toString() {
         return "PaperItem{" +

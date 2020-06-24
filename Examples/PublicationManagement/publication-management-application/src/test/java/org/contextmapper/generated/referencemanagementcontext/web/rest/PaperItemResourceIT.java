@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the {@link PaperItemResource} REST controller.
  */
 @SpringBootTest(classes = ReferenceManagementContextApp.class)
-
 @AutoConfigureMockMvc
 @WithMockUser
 public class PaperItemResourceIT {
@@ -95,7 +94,6 @@ public class PaperItemResourceIT {
     @Transactional
     public void createPaperItem() throws Exception {
         int databaseSizeBeforeCreate = paperItemRepository.findAll().size();
-
         // Create the PaperItem
         PaperItemDTO paperItemDTO = paperItemMapper.toDto(paperItem);
         restPaperItemMockMvc.perform(post("/api/paper-items")
@@ -164,7 +162,6 @@ public class PaperItemResourceIT {
             .andExpect(jsonPath("$.authors").value(DEFAULT_AUTHORS))
             .andExpect(jsonPath("$.venue").value(DEFAULT_VENUE));
     }
-
     @Test
     @Transactional
     public void getNonExistingPaperItem() throws Exception {

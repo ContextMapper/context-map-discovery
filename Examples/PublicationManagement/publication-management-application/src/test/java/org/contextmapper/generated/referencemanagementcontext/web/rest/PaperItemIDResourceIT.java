@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the {@link PaperItemIDResource} REST controller.
  */
 @SpringBootTest(classes = ReferenceManagementContextApp.class)
-
 @AutoConfigureMockMvc
 @WithMockUser
 public class PaperItemIDResourceIT {
@@ -85,7 +84,6 @@ public class PaperItemIDResourceIT {
     @Transactional
     public void createPaperItemID() throws Exception {
         int databaseSizeBeforeCreate = paperItemIDRepository.findAll().size();
-
         // Create the PaperItemID
         PaperItemIDDTO paperItemIDDTO = paperItemIDMapper.toDto(paperItemID);
         restPaperItemIDMockMvc.perform(post("/api/paper-item-ids")
@@ -148,7 +146,6 @@ public class PaperItemIDResourceIT {
             .andExpect(jsonPath("$.id").value(paperItemID.getId().intValue()))
             .andExpect(jsonPath("$.doi").value(DEFAULT_DOI));
     }
-
     @Test
     @Transactional
     public void getNonExistingPaperItemID() throws Exception {

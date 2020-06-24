@@ -25,6 +25,7 @@ public interface PaperCollectionService {
      */
     List<PaperCollectionDTO> findAll();
 
+
     /**
      * Get the "id" paperCollection.
      *

@@ -1,0 +1,29 @@
+{
+  "name": "PaperCollection",
+  "fields": [
+    {
+      "fieldName": "paperCollectionId",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "paperItem",
+      "otherEntityRelationshipName": "paperCollection",
+      "relationshipName": "paperItemList"
+    }
+  ],
+  "changelogDate": "20200624062901",
+  "entityTableName": "paper_collection",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": ["ReferenceManagementContext", "gateway"],
+  "microserviceName": "ReferenceManagementContext"
+}
