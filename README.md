@@ -1,5 +1,5 @@
 ![Context Mapper](https://raw.githubusercontent.com/wiki/ContextMapper/context-mapper-dsl/logo/cm-logo-github-small.png) 
-# Context Map (CML) Discovery Library
+# Context Mapper (CML) Discovery Library
 [![Build Status](https://travis-ci.com/ContextMapper/context-map-discovery.svg?branch=master)](https://travis-ci.com/ContextMapper/context-map-discovery) [![codecov](https://codecov.io/gh/ContextMapper/context-map-discovery/branch/master/graph/badge.svg)](https://codecov.io/gh/ContextMapper/context-map-discovery) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://img.shields.io/maven-central/v/org.contextmapper/context-map-discovery.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22org.contextmapper%22%20AND%20a:%22context-map-discovery%22)
 
 This repository contains a reverse engineering library for [Context Mapper](https://contextmapper.org). It allows to generate Context Maps written in the [Context Mapper DSL (CML)](https://github.com/ContextMapper/context-mapper-dsl) language from existing source code. It is extensible and allows to plug-in new Bounded Context or Context Map relationship discovery strategies.
