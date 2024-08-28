@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
     id 'maven-publish'
     id 'signing'
-    id 'nebula.release' version '13.0.0'
+    id 'nebula.release' version '19.0.10'
 }
 
 group 'org.contextmapper'
@@ -27,6 +27,7 @@ dependencies {
     implementation "org.yaml:snakeyaml:${snakeYMLVersion}"
     implementation "org.contextmapper:context-mapper-dsl:${cmlVersion}"
     implementation "io.swagger.parser.v3:swagger-parser:${swaggerParserVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion
@@ -152,8 +153,8 @@ test {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled false
+        xml.required = true
+        html.required = false
     }
 }
 
