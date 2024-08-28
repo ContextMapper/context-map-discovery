@@ -15,17 +15,19 @@
  */
 package org.contextmapper.discovery.strategies.boundedcontexts;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.contextmapper.discovery.ContextMapDiscoverer;
 import org.contextmapper.discovery.model.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,23 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OASBoundedContextDiscoveryStrategyTest {
 
     public static final String SAMPLE_CONTRACT_LOCATION = "./src/test/resources/test/oas-tests/sample-contract.yml";
+
+    private TestAppender logAppender;
+
+    @BeforeEach
+    public void setup() {
+        Logger logger = (Logger) LoggerFactory.getLogger(OASBoundedContextDiscoveryStrategy.class);
+        logAppender = new TestAppender();
+        logAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+        logger.addAppender(logAppender);
+        logAppender.start();
+    }
+
+    @AfterEach
+    public void cleanUp() {
+        logAppender.reset();
+        logAppender.stop();
+    }
 
     @Test
     public void canDiscoverContext() {
@@ -241,32 +260,21 @@ public class OASBoundedContextDiscoveryStrategyTest {
         // given
         ContextMapDiscoverer discoverer = new ContextMapDiscoverer()
                 .usingBoundedContextDiscoveryStrategies(new OASBoundedContextDiscoveryStrategy("./src/test/resources/test/oas-tests/oas-with-error.yml"));
-        TestAppender testAppender = new TestAppender();
-        final Logger rootLogger = Logger.getRootLogger();
-        rootLogger.addAppender(testAppender);
 
         // when, then
         assertThrows(RuntimeException.class, () -> {
             discoverer.discoverContextMap();
         });
-        assertFalse(testAppender.events.isEmpty());
+        assertFalse(logAppender.logEmpty());
     }
 
-    private class TestAppender extends AppenderSkeleton {
-        List<LoggingEvent> events = new ArrayList<LoggingEvent>();
-
-        @Override
-        protected void append(LoggingEvent event) {
-            events.add(event);
+    private class TestAppender extends ListAppender<ILoggingEvent> {
+        public void reset() {
+            this.list.clear();
         }
 
-        @Override
-        public void close() {
-        }
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
+        public boolean logEmpty() {
+            return this.list.isEmpty();
         }
     }
 
