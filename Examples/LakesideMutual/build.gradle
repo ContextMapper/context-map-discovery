@@ -22,7 +22,5 @@ dependencies {
     implementation "com.lakesidemutual:policy-management-backend:${lakesideMutualVersion}"
     implementation "com.lakesidemutual:spring-boot-admin:${lakesideMutualVersion}"
 
-    implementation('org.jvnet.mimepull:mimepull:1.9.10') {
-        force = true
-    }
+    implementation('org.jvnet.mimepull:mimepull:1.9.10')
 }
